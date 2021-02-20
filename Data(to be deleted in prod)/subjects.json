@@ -1,0 +1,92 @@
+[
+{
+    "branch":"Computer Engineering",
+    "semester" : 1,
+    "subjects" : ["Communications Skills", "Applied Maths-I", "Engineering Drawing","Introduction to Information Technology", "Workshop Practice" ]
+},
+{
+    "branch":"Computer Engineering",
+    "semester" : 2,
+    "subjects" : ["Applied Maths-II", "Applied Physics", "Basic Electronics","Electrical Engg.", "Programming in C" ]
+},
+{
+    "branch":"Computer Engineering",
+    "semester" : 3,
+    "subjects" : ["Operating System", "Digital Electronics", "Data structure in C","Micro Processor", "Computer in Workshop-I" ]
+},
+{
+    "branch":"Computer Engineering",
+    "semester" : 4,
+    "subjects" : ["Object oriented programming", "Computer Organization", "Data Communication","Data Base Management System", "Peripheral & Interfaces", "Computer workshop-II" ]
+},
+{
+    "branch":"Computer Engineering",
+    "semester" : 5,
+    "subjects" : ["Computer Troubleshooting & Maintenance", "Computer Network", "Programming in Java","Entrepreneurship Development & management", "Computer workshop-III" ]
+},
+{
+    "branch":"Computer Engineering",
+    "semester" : 6,
+    "subjects" : ["Computer Graphics", "Software Engineering", "Project","Seminar"]
+},
+{
+    "branch":"Automobile Engineering",
+    "semester" : 1,
+    "subjects" : ["Communications Techniques-I", "Applied Maths-I", "Engineering Drawing","Introduction to Information Technology", "Workshop Practice" ]
+},
+{
+    "branch":"Automobile Engineering",
+    "semester" : 2,
+    "subjects" : ["Applied Maths-II", "Applied Physics", "Basic Electronics","Electrical Engg.", "Programming in C" ]
+},
+{
+    "branch":"Automobile Engineering",
+    "semester" : 3,
+    "subjects" : ["Operating System", "Digital Electronics", "Data structure in C","Micro Processor", "Computer in Workshop-I" ]
+},
+{
+    "branch":"Automobile Engineering",
+    "semester" : 4,
+    "subjects" : ["Object oriented programming", "Computer Organization", "Data Communication","Data Base Management System", "Peripheral & Interfaces", "Computer workshop-II" ]
+},
+{
+    "branch":"Automobile Engineering",
+    "semester" : 5,
+    "subjects" : ["Computer Troubleshooting & Maintenance", "Computer Network", "Programming in Java","Entrepreneurship Development & management", "Computer workshop-III" ]
+},
+{
+    "branch":"Automobile Engineering",
+    "semester" : 6,
+    "subjects" : ["Computer Graphics", "Software Engineering", "Project","Seminar"]
+},
+{
+    "branch":"Electronics and Communication Engineering",
+    "semester" : 1,
+    "subjects" : ["Communications Techniques-I", "Applied Maths-I", "Engineering Drawing","Introduction to Information Technology", "Workshop Practice" ]
+},
+{
+    "branch":"Electronics and Communication Engineering",
+    "semester" : 2,
+    "subjects" : ["Applied Maths-II", "Applied Physics", "Basic Electronics","Electrical Engg.", "Programming in C" ]
+},
+{
+    "branch":"Electronics and Communication Engineering",
+    "semester" : 3,
+    "subjects" : ["Operating System", "Digital Electronics", "Data structure in C","Micro Processor", "Computer in Workshop-I" ]
+},
+{
+    "branch":"Electronics and Communication Engineering",
+    "semester" : 4,
+    "subjects" : ["Object oriented programming", "Computer Organization", "Data Communication","Data Base Management System", "Peripheral & Interfaces", "Computer workshop-II" ]
+},
+{
+    "branch":"Electronics and Communication Engineering",
+    "semester" : 5,
+    "subjects" : ["Computer Troubleshooting & Maintenance", "Computer Network", "Programming in Java","Entrepreneurship Development & management", "Computer workshop-III" ]
+},
+{
+    "branch":"Electronics and Communication Engineering",
+    "semester" : 6,
+    "subjects" : ["Computer Graphics", "Software Engineering", "Project","Seminar"]
+}
+]

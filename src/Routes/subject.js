@@ -2,7 +2,7 @@ const express = require('express')
 const router = new express.Router()
 const keyAuth = require('../middlewares/keyAuth')
 const processValue = require('../middlewares/processValue')
-const errorHandler = require('../errorHandler/errorHandler')
+const errorHandler = require('../utils/errorHandler/errorHandler')
 const Subject = require('../Models/Subject')
 
 router.post('/', 

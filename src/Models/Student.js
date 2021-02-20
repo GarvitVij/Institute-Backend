@@ -1,5 +1,8 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 const validator = require('validator')
+const jwt = require('jsonwebtoken')
+const {encrypt} = require('../utils/textEncryption/textEncrypt')
 
 const studentSchema = new mongoose.Schema({
     name: {
@@ -46,7 +49,7 @@ const studentSchema = new mongoose.Schema({
         minlength: 10,
         unique: true,
         validate(value){
-            if(value.lenth !== 10){
+            if(value.toString().length !== 10){
                 throw new Error("Roll Number length has to be 10")
             }
         }
@@ -107,6 +110,79 @@ const studentSchema = new mongoose.Schema({
         enum:['Morning', 'Evening']
     }
 }, {timestamps: true})
+
+studentSchema.statics.findByCredentials = async({rollNumber ,password}) => {
+    const student = await Student.findOne({rollNumber})
+
+    if(!student){
+        throw new Error()
+    }
+
+    const isMatch = await bcrypt.compare(password, student.password)
+
+    if (!isMatch) {
+        throw new Error()
+    }
+
+    return student
+}
+
+studentSchema.statics.recoverPassword = async (rollNumber) => {
+    try{
+        const student = await Student.findOne({rollNumber})
+        if(!student){throw new Error()}
+        let token = jwt.sign({id: student._id, email: student.email}, process.env.JWT_TOKEN, {expiresIn: 600000})
+        token = encrypt(token)
+        student.resetPasswordToken = token
+        await student.save()
+        return ({link: `/reset-password/${token}`})
+    }catch(e){
+        return ({error: 'cant reset password now, Please try again later'})
+    }
+}
+
+studentSchema.statics.resetPassword = async (token , password) => {
+    try{
+        const decoded = jwt.verify(token, process.env.JWT_TOKEN)
+        const student = await Student.findOne({_id:decoded.id, email: decoded.email})
+        if(!student){throw new Error()}
+        if(!student.resetPasswordToken){throw new Error()}
+        student.password = password
+        student.resetPasswordToken = undefined
+        student.tokens = []
+        await student.save()
+    }catch(e){
+        throw new Error()
+    }
+    
+}
+
+studentSchema.methods.generateAuthToken = async function(){
+    const student = this
+    const token = jwt.sign({_id: student._id.toString()}, process.env.JWT_TOKEN, {expiresIn: '3h'})
+    student.tokens = student.tokens.concat({token})
+    await student.save()
+    return token 
+}
+
+studentSchema.pre('insertMany', async function (next, docs){
+    try{
+        for(let i=0;i<docs.length;i++){
+            docs[i].password = await bcrypt.hash(docs[i].password, 12)
+        }
+        next()
+    }catch(e){
+        console.log(e)
+    }
+})
+
+studentSchema.pre('save', async function (next){
+    const student = this
+    if (student.isModified('password')) {
+        student.password = await bcrypt.hash(student.password, 12)
+    }
+    next()
+})
 
 const Student = mongoose.model('Student', studentSchema)
 
