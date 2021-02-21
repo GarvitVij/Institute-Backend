@@ -4,7 +4,7 @@ const subjectSchema = new mongoose.Schema({
     branch:{
         type: String,
         required: true,
-        enum: ['Computer Engineering', 'Automobile engineering', 'Electronics and Communication Engineering']
+        enum: ['Computer Engineering', 'Automobile Engineering', 'Electronics and Communication Engineering']
     },
     semester:{
         type:Number,
@@ -25,6 +25,20 @@ const subjectSchema = new mongoose.Schema({
         }
     }
 }, {timestamps: true})
+
+
+subjectSchema.methods.toJSON = function(){
+    const subject = this
+    const subjectObj = subject.toObject()
+
+    delete subjectObj._id
+    delete subjectObj.branch
+    delete subjectObj.createdAt
+    delete subjectObj.updatedAt
+    delete subjectObj.__v
+
+    return subjectObj
+}
 
 const Subject = mongoose.model('Subject', subjectSchema)
 

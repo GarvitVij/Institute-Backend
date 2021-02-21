@@ -165,6 +165,23 @@ studentSchema.methods.generateAuthToken = async function(){
     return token 
 }
 
+studentSchema.methods.toJSON = function () {
+    const student = this
+    const studentObj = student.toObject()
+
+    delete studentObj._id
+    delete studentObj.isLateralEntry
+    delete studentObj.password
+    delete studentObj.tokens
+    delete studentObj.email
+    delete studentObj.__v
+    delete studentObj.createdAt
+    delete studentObj.updatedAt
+
+    return studentObj
+}
+
+
 studentSchema.pre('insertMany', async function (next, docs){
     try{
         for(let i=0;i<docs.length;i++){

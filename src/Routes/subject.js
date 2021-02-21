@@ -5,6 +5,25 @@ const processValue = require('../middlewares/processValue')
 const errorHandler = require('../utils/errorHandler/errorHandler')
 const Subject = require('../Models/Subject')
 
+router.get('/', 
+            keyAuth,
+            processValue(['semester', 'branch']),
+            async(req,res)=>{
+                try{
+                    const subjects = await Subject.findOne({semester: req.body.semester, branch : req.body.branch })
+                    if(!subjects) {
+                        return res.status(404).send({error: "Subjects Not found"})
+                    }
+                    return res.send(subjects)
+                }catch(e){
+                    return res.status(500).send({error: "Server internal error"})
+                }
+            }
+            
+)
+
+
+
 router.post('/', 
             keyAuth , 
             processValue(['branch', 'semester', 'subjects']) ,

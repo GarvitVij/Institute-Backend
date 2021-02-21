@@ -1,92 +1,92 @@
 [
-{
-    "branch":"Computer Engineering",
-    "semester" : 1,
-    "subjects" : ["Communications Skills", "Applied Maths-I", "Engineering Drawing","Introduction to Information Technology", "Workshop Practice" ]
-},
-{
-    "branch":"Computer Engineering",
-    "semester" : 2,
-    "subjects" : ["Applied Maths-II", "Applied Physics", "Basic Electronics","Electrical Engg.", "Programming in C" ]
-},
-{
-    "branch":"Computer Engineering",
-    "semester" : 3,
-    "subjects" : ["Operating System", "Digital Electronics", "Data structure in C","Micro Processor", "Computer in Workshop-I" ]
-},
-{
-    "branch":"Computer Engineering",
-    "semester" : 4,
-    "subjects" : ["Object oriented programming", "Computer Organization", "Data Communication","Data Base Management System", "Peripheral & Interfaces", "Computer workshop-II" ]
-},
-{
-    "branch":"Computer Engineering",
-    "semester" : 5,
-    "subjects" : ["Computer Troubleshooting & Maintenance", "Computer Network", "Programming in Java","Entrepreneurship Development & management", "Computer workshop-III" ]
-},
-{
-    "branch":"Computer Engineering",
-    "semester" : 6,
-    "subjects" : ["Computer Graphics", "Software Engineering", "Project","Seminar"]
-},
-{
-    "branch":"Automobile Engineering",
-    "semester" : 1,
-    "subjects" : ["Communications Techniques-I", "Applied Maths-I", "Engineering Drawing","Introduction to Information Technology", "Workshop Practice" ]
-},
-{
-    "branch":"Automobile Engineering",
-    "semester" : 2,
-    "subjects" : ["Applied Maths-II", "Applied Physics", "Basic Electronics","Electrical Engg.", "Programming in C" ]
-},
-{
-    "branch":"Automobile Engineering",
-    "semester" : 3,
-    "subjects" : ["Operating System", "Digital Electronics", "Data structure in C","Micro Processor", "Computer in Workshop-I" ]
-},
-{
-    "branch":"Automobile Engineering",
-    "semester" : 4,
-    "subjects" : ["Object oriented programming", "Computer Organization", "Data Communication","Data Base Management System", "Peripheral & Interfaces", "Computer workshop-II" ]
-},
-{
-    "branch":"Automobile Engineering",
-    "semester" : 5,
-    "subjects" : ["Computer Troubleshooting & Maintenance", "Computer Network", "Programming in Java","Entrepreneurship Development & management", "Computer workshop-III" ]
-},
-{
-    "branch":"Automobile Engineering",
-    "semester" : 6,
-    "subjects" : ["Computer Graphics", "Software Engineering", "Project","Seminar"]
-},
-{
-    "branch":"Electronics and Communication Engineering",
-    "semester" : 1,
-    "subjects" : ["Communications Techniques-I", "Applied Maths-I", "Engineering Drawing","Introduction to Information Technology", "Workshop Practice" ]
-},
-{
-    "branch":"Electronics and Communication Engineering",
-    "semester" : 2,
-    "subjects" : ["Applied Maths-II", "Applied Physics", "Basic Electronics","Electrical Engg.", "Programming in C" ]
-},
-{
-    "branch":"Electronics and Communication Engineering",
-    "semester" : 3,
-    "subjects" : ["Operating System", "Digital Electronics", "Data structure in C","Micro Processor", "Computer in Workshop-I" ]
-},
-{
-    "branch":"Electronics and Communication Engineering",
-    "semester" : 4,
-    "subjects" : ["Object oriented programming", "Computer Organization", "Data Communication","Data Base Management System", "Peripheral & Interfaces", "Computer workshop-II" ]
-},
-{
-    "branch":"Electronics and Communication Engineering",
-    "semester" : 5,
-    "subjects" : ["Computer Troubleshooting & Maintenance", "Computer Network", "Programming in Java","Entrepreneurship Development & management", "Computer workshop-III" ]
-},
-{
-    "branch":"Electronics and Communication Engineering",
-    "semester" : 6,
-    "subjects" : ["Computer Graphics", "Software Engineering", "Project","Seminar"]
-}
-]
+    {
+        "branch":"Computer Engineering",
+        "semester" : 1,
+        "subjects" : ["Communications Skills", "Applied Maths-I", "Engineering Drawing","Introduction to Information Technology", "Workshop Practice" ]
+    },
+    {
+        "branch":"Computer Engineering",
+        "semester" : 2,
+        "subjects" : ["Applied Maths-II", "Applied Physics", "Basic Electronics","Electrical Engg.", "Programming in C" ]
+    },
+    {
+        "branch":"Computer Engineering",
+        "semester" : 3,
+        "subjects" : ["Operating System", "Digital Electronics", "Data structure in C","Micro Processor", "Computer in Workshop-I" ]
+    },
+    {
+        "branch":"Computer Engineering",
+        "semester" : 4,
+        "subjects" : ["Object oriented programming", "Computer Organization", "Data Communication","Data Base Management System", "Peripheral & Interfaces", "Computer workshop-II" ]
+    },
+    {
+        "branch":"Computer Engineering",
+        "semester" : 5,
+        "subjects" : ["Computer Troubleshooting & Maintenance", "Computer Network", "Programming in Java","Entrepreneurship Development & management", "Computer workshop-III" ]
+    },
+    {
+        "branch":"Computer Engineering",
+        "semester" : 6,
+        "subjects" : ["Computer Graphics", "Software Engineering", "Project","Seminar"]
+    },
+    {
+        "branch":"Automobile Engineering",
+        "semester" : 1,
+        "subjects" : ["Applied Maths-I", "Communication Tech", "Elements Of Mech Engg (PR)","Elements Of Mech Engg", "Engineering Drawing-I", "Workshop Practice-I" ]
+    },
+    {
+        "branch":"Automobile Engineering",
+        "semester" : 2,
+        "subjects" : ["Applied Maths-II", "Applied Mechanics (PR)", "Applied Mechanics ", "Elements Of Electrical Engg (PR)", "Elements Of Electrical Engg", "Engineering Drawing-II", "Workshop Practice-II"]
+    },
+    {
+        "branch":"Automobile Engineering",
+        "semester" : 3,
+        "subjects" : ["Automobile Engineering Drawing-I (PR)", "Autoshop Practice-I (PR)", "Basics Electronics (PR)", "Basics Electronics", "Basics of Automobile Engineering", "Elements of Strength of Material & Hydraulics (PR)", "Elements of Strength of Material & Hydraulics", "Principles of Thermal Engineering (PR)", "Principles of Thermal Engineering"]
+    },
+    {
+        "branch":"Automobile Engineering",
+        "semester" : 4,
+        "subjects" : ["Autoshop Practice-II (PR)", "Computer Programming & Apllication (PR)", "Computer Programming & Apllication", "Elements of Design & Mechanics of Vehicles", "Material Science (PR)", "Material Science", "Workshop Technology (PR)", "Workshop Technology"]
+    },
+    {
+        "branch":"Automobile Engineering",
+        "semester" : 5,
+        "subjects" : ["Auto Repair & Maintenance-I (PR)", "Chasis, Body Tranmission (PR)", "Chasis, Body Tranmission", "Computer Aided Drafting Pactical", "Garage Equipment (PR)", "Garage Equipment", "Industrial Management Auto", "Special Vehicle Equipment (Th)" ]
+    },
+    {
+        "branch":"Automobile Engineering",
+        "semester" : 6,
+        "subjects" : ["Auto Repair & Maintenance-II (PR)", "Communication Techniques-II", "Transport Management Auto"]
+    },
+    {
+        "branch":"Electronics and Communication Engineering",
+        "semester" : 1,
+        "subjects" : ["Applied Maths-I", "Applied Physics (PR)", "Applied Physics", "Basic Electricty (PR)", "Basic Electricty", "Communication Techniques", "Workshop Practice-I"]
+    },
+    {
+        "branch":"Electronics and Communication Engineering",
+        "semester" : 2,
+        "subjects" : ["Applied Maths-II", "Electronic Engg (PR)", "Electronic Engg", "Electronics Component And Material", "Engineering Drawing (PR)", "Introduction to Computer", "Workshop Practice-II (PR)" ]
+    },
+    {
+        "branch":"Electronics and Communication Engineering",
+        "semester" : 3,
+        "subjects" : ["Digital Electronics (PR)", "Digital Electronics", "Electronics Devices And Circutes-II (PR)", "Electronics Devices And Circutes-II", "Electronics Fabrication Techniques (PR)", "Network, Filters And Trans. Lines (PR)", "Principle Of Comm Engg (PR)", "Principle Of Comm Engg"]
+    },
+    {
+        "branch":"Electronics and Communication Engineering",
+        "semester" : 4,
+        "subjects" : ["Electronic Drawing And Design (PR)", "Electronic Instruments And Measurements (PR)", "Electronic Instruments And Measurements", "Electronics Devices And Circuits-III (PR)", "Electronics Devices And Circuits-III", "Industrial Management And EDP", "Intro To Microprocessor (PR)", "Intro To Microprocessor", "Minor Project (PR)" ]
+    },
+    {
+        "branch":"Electronics and Communication Engineering",
+        "semester" : 5,
+        "subjects" : ["Communication System (PR)", "Communication System", "Consumer Electronics (PR)", "Consumer Electronics", "Industrial Elect. And Instrumentation (PR)", "Industrial Elect. And Instrumentation", "PC Organization (PR)", "PC Organization", "Product Design And Development (PR)", "Trouble Shooting And Maintenace Of Electronics Equip (PR)", "Trouble Shooting And Maintenace Of Electronics Equip" ]
+    },
+    {
+        "branch":"Electronics and Communication Engineering",
+        "semester" : 6,
+        "subjects" : ["Addvanced Communication System (PR)", "Addvanced Communication System", "Major Project (industry) (PR)", "Microprocessor System Design (PR)", "Microprocessor System Design", "TV Enginnering"]
+    }
+    ]
