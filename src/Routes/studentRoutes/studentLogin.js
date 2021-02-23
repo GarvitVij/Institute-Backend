@@ -17,9 +17,9 @@ router.post('/login',
                         secure: true,
                         httpOnly: true
                     })
-                    res.status(200).send({token})
+                    res.status(200).send({isSuccess: true})
                 }catch(e){
-                    res.status(400).send({error: 'Invalid Email or password'})
+                    res.status(400).send({isSuccess: false})
                 }
 })
 

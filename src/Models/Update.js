@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 
-const updateSchema = new mongoose.Schema({
+const updateReceiptSchema = new mongoose.Schema({
     recepitID:{
         type: String,
         required: true,
@@ -48,6 +48,6 @@ const updateSchema = new mongoose.Schema({
     }
 }, {timestamps: true})
 
-const Update = mongoose.model('Update', updateSchema)
+const updateReceipt = mongoose.model('Update', updateReceiptSchema)
 
-module.exports = Update
+module.exports = updateReceipt

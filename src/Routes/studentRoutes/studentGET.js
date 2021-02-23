@@ -11,6 +11,7 @@ router.get('/', studentAuth ,async(req,res)=>{
         const evenOdd = (req.student.currentSemester)%2 
         let validSems = evenOdd === 1 ? odd : even
         validSems=validSems.filter(sem=> sem < req.student.currentSemester)
+        console.log(validSems)
         const subjects = await Subject.find({branch: req.student.branch, semester:{$in: validSems}})
         return res.status(200).send({student: req.student, subjects})
     }catch(e){
