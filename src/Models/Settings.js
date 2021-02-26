@@ -40,9 +40,9 @@ const settingSchema =  new mongoose.Schema({
     minLateFeeDate: {
         type:Date,
         required: true,
-        default: Date.now(),
+        default: Date.now() + 86400000,
         validate(value){
-            if(Date.now() < value){
+            if(Date.now() > value){
                 throw new Error('Last Date to submit cant be in past')
             }
         }
@@ -50,9 +50,9 @@ const settingSchema =  new mongoose.Schema({
     maxLateFeeDate: {
         type:Date,
         required: true,
-        default: Date.now() + 86400000,
+        default: Date.now() + (86400000*2),
         validate(value){
-            if(Date.now() < value){
+            if(Date.now() > value){
                 throw new Error('Last Date to submit cant be in past')
             }
         }

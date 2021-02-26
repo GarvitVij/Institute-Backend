@@ -1,95 +1,130 @@
 const mongoose = require('mongoose')
 
 const paymentSchema = new mongoose.Schema({
-    recepitID:{
+    rollNumber: {
+        type: Number,
+        required: [true, "Please provide a roll number"],
+        maxLength: 10,
+        minlength: 10,
+        validate(value){
+            if(value.toString().length !== 10){
+                throw new Error("Roll Number length has to be 10")
+            }
+        }
+    },
+    semester: {
+        type: Number,
+        required: true,
+        enum: [1,2,3,4,5,6,7,8,9,10],
+        maxLenth:2
+    },
+    receiptID:{
         type: String,
         required: true,
-        max:255,
+        maxlength:255,
         trim:true
     },
     orderID:{
         type: String,
         required: true,
-        max:255,
+        maxlength:255,
         trim:true
     },
     amount: {
         type: Number,
         required: true,
-        max:4,
+        maxlength:4,
     },
-    notes: {
+    notes: [{
         type: String,
         required: true,
-        max: 1000,
+        maxlength: 1000,
         trim:true
-    },
+    }],
     date:{
         type: Date,
         required:true,
     },
-    method: {
-        type: String,
-        required: true,
-        max: 255,
-        trim:true
-    },
-    description:{
-        type:String,
-        required: true,
-        max:255,
-        trim:true
-    },
     isSuccess:{
         type: Boolean,
-        required: true
+        required: true,
+        default: false
     },
     razorpayPaymentID:{
         type: String,
         sparse: true,
-        max:500,
-        trim:true
-    },
-    razorpayOrderID:{
-        type: String,
-        sparse: true,
-        max:500,
-        trim:true
-    },
-    razorpaySignature:{
-        type: String,
-        sparse: true,
-        max:500,
+        maxlength:500,
         trim:true
     },
     isSigned:{
         type: Boolean,
-        required: true
+        required: true,
+        default: false
     },
-    errorCode: {
-        type:Number,
-        sparse:true,
-        max:5
+    paymentErrors: [
+        {
+            errorCode: {
+                type:String,
+                sparse:true,
+                maxlength:255
+            },
+            errorDescription: {
+                type:String,
+                sparse:true,
+                maxlength: 255,
+                trim:true
+            },
+            errorSource:{
+                type: String,
+                sparse:true,
+                maxlength: 255,
+                trim:true
+            },
+            errorReason:{
+                type:String,
+                sparse:true,
+                maxlength:255,
+                trim:true
+            },
+            paymentId: {
+                type:String,
+                sparse: true,
+                maxlength: 255,
+                trim : true
+            }
+        }
+    ],
+    isValid: {
+        type: Boolean,
+        required: true,
+        default: false
     },
-    errorDescription: {
-        type:String,
-        sparse:true,
-        max: 255,
-        trim:true
-    },
-    errorSource:{
+    currency: {
         type: String,
-        sparse:true,
-        max: 255,
-        trim:true
-    },
-    errorReason:{
-        type:String,
-        sparse:true,
-        max:255,
-        trim:true
+        required: true,
+        default: "INR"
     }
+    
 }, {timestamps: true})
+
+paymentSchema.methods.toJSON = function(){
+    const receipt = this
+    const receiptObj = receipt.toObject()
+
+    delete receiptObj._id
+    delete receiptObj.rollNumber
+    delete receiptObj.isSuccess
+    delete receiptObj.isSigned
+    delete receiptObj.isValid
+    delete receiptObj.receiptID
+    delete receiptObj.date
+    delete receiptObj.paymentErrors
+    delete receiptObj.createdAt
+    delete receiptObj.updatedAt
+    delete receiptObj.__v
+
+    return receiptObj
+}
 
 const Payment = mongoose.model('Payment', paymentSchema)
 

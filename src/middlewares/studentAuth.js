@@ -4,6 +4,7 @@ const Student = require('../Models/Student')
 
 const studentAuth = async (req,res,next) => {
     try{
+        // const token = req.cookies.token || '' 
         const token = req.header('Authorization').replace('Bearer ', '')
         if(!token){
             return res.status(401).send({error: 'Please Authenticate'})
@@ -18,6 +19,7 @@ const studentAuth = async (req,res,next) => {
         req.student = student
         next()
     }catch(e){
+        console.log(e)
         res.clearCookie('token').status(401).send({ error: 'Please Authenticate' })
     }
    

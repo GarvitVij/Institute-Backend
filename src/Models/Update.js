@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 
 const updateReceiptSchema = new mongoose.Schema({
-    recepitID:{
+    receiptID:{
         type: String,
         required: true,
         trim:true

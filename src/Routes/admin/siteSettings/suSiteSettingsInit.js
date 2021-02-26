@@ -7,8 +7,11 @@ const processValue = require('../../../middlewares/processValue')
 router.post('/', keyAuth, processValue(['force']) ,async (req,res)=>{
     try{
         let init = await SiteSettings.findOne()
-        if(init && !req.body.force === true){
-            return res.send({success: 'Already initialized'})
+       
+        if(init){
+            if(req.body.force !== true){
+                return res.send({success: 'Already initialized'})
+            }
         }
         const notices = [{title: '', desc: ''},{title: '', desc: ''},{title: '', desc: ''},{title: '', desc: ''},{title: '', desc: ''}]
         init = new SiteSettings({notices})

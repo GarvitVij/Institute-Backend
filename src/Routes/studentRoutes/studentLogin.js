@@ -17,7 +17,7 @@ router.post('/login',
                         secure: true,
                         httpOnly: true
                     })
-                    res.status(200).send({isSuccess: true})
+                    res.status(200).send({token})
                 }catch(e){
                     res.status(400).send({isSuccess: false})
                 }

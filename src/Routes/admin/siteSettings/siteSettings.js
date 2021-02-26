@@ -56,6 +56,7 @@ router.patch('/fee',
                     const savedSetting = await settings.save()
                     res.send({savedSetting})
                 }catch(e){
+                    console.log(e)
                     res.send({error: 'cant update settings now'})
                 }
 })
