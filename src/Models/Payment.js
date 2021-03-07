@@ -115,7 +115,6 @@ paymentSchema.methods.toJSON = function(){
     delete receiptObj.rollNumber
     delete receiptObj.isSuccess
     delete receiptObj.isSigned
-    delete receiptObj.isValid
     delete receiptObj.receiptID
     delete receiptObj.date
     delete receiptObj.paymentErrors
