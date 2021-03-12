@@ -3,6 +3,7 @@ const router = new express.Router()
 const SiteSettings = require('../../../Models/Settings')
 const processValue = require('../../../middlewares/processValue')
 const errorHandler = require('../../../utils/errorHandler/errorHandler')
+const logger = require('../../../logger/logger')
 
 router.get('/', async(req,res)=>{
     try{
@@ -34,9 +35,12 @@ router.patch('/notices', processValue(['notices']), async (req,res)=>{
             }
         })   
         settings.notices = notices
-        const savedNotices = await settings.save({notices})
+        const savedNotices = await SiteSettings.findOneAndUpdate({notices: notices})
+        logger(204, "adminOne", "Updated Notices", 1)
         res.send({savedNotices})
+    
     }catch(e){
+        console.log(e)
         res.send(errorHandler(e))
     }
 })

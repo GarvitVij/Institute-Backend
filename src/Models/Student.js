@@ -127,6 +127,7 @@ studentSchema.statics.findByCredentials = async({rollNumber ,password}) => {
     return student
 }
 
+
 studentSchema.statics.recoverPassword = async (rollNumber) => {
     try{
         const student = await Student.findOne({rollNumber})

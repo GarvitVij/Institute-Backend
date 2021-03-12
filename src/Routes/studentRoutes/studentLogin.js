@@ -14,7 +14,8 @@ router.post('/login',
                     token = encrypt(token)
                     res.cookie('token', token, {
                         expires: new Date(Date.now() + 10800000),
-                        secure: true,
+                        secure: false,
+                        path: "/",
                         httpOnly: true
                     })
                     res.status(200).send({token})

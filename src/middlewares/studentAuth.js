@@ -6,6 +6,8 @@ const studentAuth = async (req,res,next) => {
     try{
         // const token = req.cookies.token || '' 
         const token = req.header('Authorization').replace('Bearer ', '')
+        // const token = req.cookies.token || '' 
+        // console.log(token)
         if(!token){
             return res.status(401).send({error: 'Please Authenticate'})
         }
@@ -19,7 +21,7 @@ const studentAuth = async (req,res,next) => {
         req.student = student
         next()
     }catch(e){
-        res.clearCookie('token').status(401).send({ error: 'Please Authenticate' })
+        res.status(401).send({ error: 'Please Authenticate' })
     }
    
 }
