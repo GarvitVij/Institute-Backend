@@ -9,13 +9,13 @@ router.get('/validate', processValue(['semester', 'rollNumber', 'receiptNumber' 
         if(!receipt){
             return res.send({error: 'cant find any receipt!'})
         }
-        if(receipt.isSigned===false){
+        if(receipt.isPartialSuccess===false){
             return res.send({error: 'Payment doesnt seems legit, contact admin !'})
         }
         if(receipt.isValid === true){
             return res.send({success: 'Receipt is already validated'})
         }
-        res.send({amount: receipt.amount, notes: receipt.notes })
+        res.send({amount: receipt.amount, notes: receipt.notes, orderID: receipt.orderID, razorpayPaymentID:receipt.razorpayPaymentID  })
     }catch(e){
         res.send({error: 'Something went wrong, please try again later'})
     }
@@ -27,7 +27,7 @@ router.post('/validate', processValue(['orderID', 'paymentID']), async(req,res)=
         if(!receipt){
             return res.send({error: 'cant find any receipt!'})
         }
-        if(receipt.isSigned===false){
+        if(receipt.isPartialSuccess===false){
             return res.send({error: 'Payment doesnt seems legit, contact admin !'})
         }
         if(receipt.isValid === true){

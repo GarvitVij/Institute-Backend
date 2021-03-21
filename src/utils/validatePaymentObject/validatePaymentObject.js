@@ -4,9 +4,12 @@ const validatePaymentObject = async(req,res,next) => {
     if(!req.student || (!req.body.subjects && !req.body.semester)){
         return res.send({error: 'Invalid Body'})
     }
-    if(req.student.currentSemester !== req.body.semester){
-        return res.send({error: 'Invalid Semester'})
+    if(req.body.semester){
+        if(req.student.currentSemester !== req.body.semester){
+            return res.send({error: 'Invalid Semester'})
+        }
     }
+   
     try{
         for(let i = 0; i<req.body.subjects.length;i++){
             const AllowedSubjects = await Subjects.findOne({semester: req.body.subjects[i].semester, branch: req.student.branch})

@@ -108,6 +108,10 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum:['Morning', 'Evening']
+    },
+    hasPaid: {
+        type:Boolean,
+        defaut:false,
     }
 }, {timestamps: true})
 

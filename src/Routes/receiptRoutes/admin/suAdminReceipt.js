@@ -86,10 +86,11 @@ router.post('/fixSignature', keyAuth, processValue(['orderID']), async(req,res)=
         if(!receipt){
             return res.send({error: 'No receipt Found'})
         }
-        if(receipt.isSigned){
+        if(receipt.isPartialSuccess === true){
             return res.send({error: 'Receipt already signed'})
         }
-        receipt.isSigned = true
+        receipt.isPartialSuccess = true
+        receipt.isSuccess = true
         receipt = await receipt.save()
         return res.send({receipt})
     }catch(e){
@@ -97,26 +98,5 @@ router.post('/fixSignature', keyAuth, processValue(['orderID']), async(req,res)=
     }
 })
 
-router.post('/fixSuccess', keyAuth, processValue(['orderID', 'paymentID']), async(req,res)=>{
-    try{
-        let receipt = await Receipt.findOne({orderID: req.body.orderID})
-        if(!receipt){
-            return res.send({error: 'No receipt Found'})
-        }
-        if(receipt.isSuccess){
-            return res.send({error: 'Receipt already a success'})
-        }
-        if(!req.body.paymentID){
-            return res.send({error: 'Please provide a payment ID'})
-        }
-        receipt.isSigned = true
-        receipt.isSuccess = true
-        receipt.razorpayPaymentID = req.body.paymentID
-        receipt = await receipt.save()
-        return res.send({receipt})
-    }catch(e){
-        return res.send({error: 'Some error occurred'})
-    }
-})
 
 module.exports = router

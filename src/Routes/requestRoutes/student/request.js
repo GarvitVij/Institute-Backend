@@ -15,8 +15,8 @@ router.post('/',
                     if(!receipt){
                         return res.send({error: 'No receipt was found'})
                     }
-                    if(receipt.isSigned === false){
-                        return res.send({error: 'Receipt is not signed'})
+                    if(receipt.isPartialSuccess === false){
+                        return res.send({error: 'Receipt is not Valid, contact collage'})
                     }
                     if(!req.body.subjectFrom && !req.body.subjectTo){
                         return res.send({error: 'Subjects not found'})

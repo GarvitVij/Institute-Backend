@@ -56,7 +56,7 @@ const paymentSchema = new mongoose.Schema({
         maxlength:500,
         trim:true
     },
-    isSigned:{
+    isPartialSuccess:{
         type: Boolean,
         required: true,
         default: false
@@ -103,6 +103,12 @@ const paymentSchema = new mongoose.Schema({
         type: String,
         required: true,
         default: "INR"
+    },
+    method: {
+        type: String,
+        sparse: true,
+        maxlength: 255,
+        trim:true
     }
     
 }, {timestamps: true})
@@ -115,8 +121,8 @@ paymentSchema.methods.toJSON = function(){
     delete receiptObj.rollNumber
     delete receiptObj.isSuccess
     delete receiptObj.isSigned
-    delete receiptObj.receiptID
-    delete receiptObj.date
+    delete receiptObj.razorpayPaymentID
+    delete receiptObj.currency
     delete receiptObj.paymentErrors
     delete receiptObj.createdAt
     delete receiptObj.updatedAt

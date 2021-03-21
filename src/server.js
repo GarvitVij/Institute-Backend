@@ -17,6 +17,7 @@ const adminSiteSettingsInitRoutes = require('./Routes/admin/siteSettings/suSiteS
 const adminReceiptsRoutes = require('./Routes/receiptRoutes/admin/receipt')
 const adminSuReceiptsRoutes = require('./Routes/receiptRoutes/admin/suAdminReceipt')
 const adminRequestRoutes = require('./Routes/requestRoutes/admin/request')
+const paymentsHooks = require('./Routes/receiptRoutes/Hooks/hooks')
 
 var allowedOrigins = ['http://localhost:3000',
                       'http://yourapp.com'];
@@ -39,6 +40,8 @@ app.use('/api/student/auth/', studentLoginRoutes)
 app.use('/api/student/get', studentGETRoutes)
 app.use('/api/student/fee', studentPayRoutes)
 app.use('/api/student/request', studentRequestRoutes)
+
+app.use('/payments/hooks', paymentsHooks)
 
 app.use('/api/admin/student', adminStudentRoutes)
 app.use('/api/admin/detailStudent', adminStudentDetailRoutes)

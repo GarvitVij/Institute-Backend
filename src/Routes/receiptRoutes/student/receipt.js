@@ -8,12 +8,22 @@ const validatePaymentObject = require('../../../utils/validatePaymentObject/vali
 const {nanoid} = require('nanoid')
 const Receipt = require('../../../Models/Payment')
 var crypto = require('crypto');
-
+const Subject = require('../../../Models/Subject')
+const Student = require('../../../Models/Student')
 
 router.get('/getAll', studentAuth, async(req,res)=>{
     try{
-        const receipts = await Receipt.find({rollNumber: req.student.rollNumber, isSuccess: true})
-        return res.send({receipts})
+        const receipts = await Receipt.find({rollNumber: req.student.rollNumber, isSuccess: true, isPartialSuccess: true})
+        const odd = [1,3,5]
+        const even = [2,4,6]
+        const evenOdd = (req.student.currentSemester)%2 
+        let validSems = evenOdd === 1 ? odd : even
+        validSems=validSems.filter(sem=> sem < req.student.currentSemester)
+        const subjects = await Subject.find({branch: req.student.branch, semester:{$in: validSems}})
+        if(!receipts && !subjects){
+            return res.status(404).send()
+        }
+        return res.send({receipts, subjects})
     }catch(e){
         return res.send({error: 'Try again later'})
     }
@@ -40,7 +50,7 @@ router.post('/pay',
                     }
                     let amount = 0
                     let notes = []
-                    if(req.body.semester){
+                    if(req.body.semester ){
                         amount = amount + settings.normalFee
                         notes.push(`for Semester : ${req.body.semester}`)
                     }
@@ -55,12 +65,14 @@ router.post('/pay',
                     const lateFeeCheck = now >= settings.maxLateFeeDate ? settings.maxLateFee : now >= settings.minLateFeeDate ? settings.minLateFee : 0
                     amount =  amount + lateFeeCheck
 
+
                     const receiptExsist = await Receipt.findOne({
                         rollNumber: req.student.rollNumber,
-                        semester: req.student.currentSemester,
+                        semester: req.body.semester,
                         notes: notes,
-                        amount: amount
+                        amount: amount*100
                     })
+
 
                     if(receiptExsist){
                         return res.send({savedReceipt: receiptExsist, student: req.student})
@@ -113,20 +125,15 @@ router.post('/validate', studentAuth,processValue(['success', 'error', 'order_id
     
         let updatedReceipt = {}
         if(req.body.success){
-            const shasum = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET);
-            shasum.update(`${req.body.order_id}|${req.body.success.razorpay_payment_id}`);
-            
-            receipt.isSigned = true
-            
-            const digest = shasum.digest("hex");
-            if (digest !== req.body.success.razorpay_signature){
-                receipt.isSigned = false
+            if(req.body.order_id && req.body.success.razorpay_signature){
+                const shasum = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET);
+                shasum.update(`${req.body.order_id}|${req.body.success.razorpay_payment_id}`);
+                const digest = shasum.digest("hex");
+                if (digest === req.body.success.razorpay_signature){
+                    receipt.isPartialSuccess = true
+                }
+                updatedReceipt = await receipt.save()
             }
-    
-            receipt.isSuccess = true
-            receipt.razorpayPaymentID = req.body.success.razorpay_payment_id
-            updatedReceipt = await receipt.save()
-
         }else{
             receipt.paymentErrors = receipt.paymentErrors.concat({
                 errorCode: req.body.error.code,
@@ -136,7 +143,7 @@ router.post('/validate', studentAuth,processValue(['success', 'error', 'order_id
                 paymentId: req.body.error.payment_id
             })
             updatedReceipt = await receipt.save()
-        }
+        }  
         return res.send({updatedReceipt})
     }catch(e){
         console.log(e)

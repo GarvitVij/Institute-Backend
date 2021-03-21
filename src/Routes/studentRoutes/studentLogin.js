@@ -14,21 +14,22 @@ router.post('/login',
                     token = encrypt(token)
                     res.cookie('token', token, {
                         expires: new Date(Date.now() + 10800000),
-                        secure: false,
+                        secure: true,
                         path: "/",
-                        httpOnly: true
+                        httpOnly: false
                     })
-                    res.status(200).send({token})
+                    res.status(200).send({isSuccess: true})
                 }catch(e){
-                    res.status(400).send({isSuccess: false})
+                    res.status(401).send({isSuccess: false})
                 }
 })
 
-router.post('/logout', studentAuth, async(req,res)=>{
+router.delete('/logout', studentAuth, async(req,res)=>{
     try{
         req.student.tokens = []
         await req.student.save()
         res.clearCookie('token')
+        res.clearCookie('name')
         res.status(204).send()
     }catch(e){
         res.clearCookie('token')

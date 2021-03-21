@@ -1,6 +1,7 @@
 const express = require('express')
 const router = new express.Router()
 const Student = require('../../../Models/Student')
+const Request = require('../../../Models/Update')
 const errorHandler = require('../../../utils/errorHandler/errorHandler')
 const processValue = require('../../../middlewares/processValue')
 const multer = require('multer')
@@ -90,7 +91,8 @@ router.delete('/', processValue(['students']), async(req,res)=>{
 
 router.patch('/incSem', async(req,res)=>{
     try{
-        const updated = await Student.updateMany({currentSemester: {$lt: 6}}, {$inc: {'currentSemester': 1}})
+        const updated = await Student.updateMany({currentSemester: {$lt: 6}}, { $inc: {'currentSemester': 1}, hasPaid: false })
+        await Request.collection.drop()
         res.send(updated)
     }catch(e){
         return res.send({error: 'Something went wrong'})
@@ -109,7 +111,7 @@ router.patch('/passHold', processValue(['students', 'type']) ,async(req,res)=>{
             res.send(removed) 
         }
         if(req.body.type === "hold"){
-            const updated = await Student.updateMany({rollNumber: {$in: req.body.students}, currentSemester:{$gt: 5}}, {$inc: {'currentSemester': 1}})
+            const updated = await Student.updateMany({rollNumber: {$in: req.body.students}, currentSemester:{$gt: 5}}, {$inc: {'currentSemester': 1}, hasPaid: false })
             res.send(updated) 
         }
 
