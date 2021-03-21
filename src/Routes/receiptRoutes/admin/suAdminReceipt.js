@@ -4,6 +4,7 @@ const keyAuth = require('../../../middlewares/keyAuth')
 const processValue = require('../../../middlewares/processValue')
 const Receipt = require('../../../Models/Payment')
 const Razorpay = require('razorpay')
+const {nanoid} = require('nanoid')
 
 router.get('/getOrder', keyAuth, processValue(['id']), async (req, res)=>{
     
@@ -91,6 +92,7 @@ router.post('/fixSignature', keyAuth, processValue(['orderID']), async(req,res)=
         }
         receipt.isPartialSuccess = true
         receipt.isSuccess = true
+        receipt.razorpayPaymentID = `Admin_${nanoid()}`
         receipt = await receipt.save()
         return res.send({receipt})
     }catch(e){

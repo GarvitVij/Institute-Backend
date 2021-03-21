@@ -45,7 +45,7 @@ router.post('/resetpwd',processValue(['rollNumber']) ,async(req,res)=>{
            throw new Error()
         }
         console.log(`Sending mail...`)
-        console.log(`${req.hostname}${student.link}`)
+        console.log(`${req.header('host')}${student.link}`)
         return res.status(200).send({message: "You will shortly receive an email !"})
     }catch(e){
         return res.status(500).send(student.error)
