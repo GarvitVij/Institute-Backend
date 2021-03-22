@@ -10,6 +10,10 @@ const Receipt = require('../../../Models/Payment')
 var crypto = require('crypto');
 const Subject = require('../../../Models/Subject')
 const Student = require('../../../Models/Student')
+const ejs = require("ejs");
+const pdf = require("html-pdf");
+const fs = require('fs')
+const path = require("path");
 
 router.get('/getAll', studentAuth, async(req,res)=>{
     try{
@@ -150,6 +154,68 @@ router.post('/validate', studentAuth,processValue(['success', 'error', 'order_id
         return res.send({error: 'something went wrong'})
     }
     
+})
+
+
+router.get('/generate', studentAuth, processValue(['receiptID']), async(req,res)=>{
+    try{
+        let students = [
+            {name: "Joy",
+             email: "joy@example.com",
+             city: "New York",
+             country: "USA"},
+            {name: "John",
+             email: "John@example.com",
+             city: "San Francisco",
+             country: "USA"},
+            {name: "Clark",
+             email: "Clark@example.com",
+             city: "Seattle",
+             country: "USA"},
+            {name: "Watson",
+             email: "Watson@example.com",
+             city: "Boston",
+             country: "USA"},
+            {name: "Tony",
+             email: "Tony@example.com",
+             city: "Los Angels",
+             country: "USA"
+         }];
+        const receipt = await Receipt.find({receiptID: req.body.receiptID})
+        ejs.renderFile(path.join(__dirname, './views/', "report-template.ejs"), {students: students}, (err, data) => {
+            if (err) {
+                  res.send(err);
+            } else {
+                let options = {
+                    "height": "11.25in",
+                    "width": "8.5in",
+                    "header": {
+                        "height": "20mm"
+                    },
+                    "footer": {
+                        "height": "20mm",
+                    },
+                };
+                const id = nanoid()
+                pdf.create(data, options).toFile(path.join(__dirname, `./${id}.pdf`), function (err, data) {
+                    if (err) {
+                        res.send(err);
+                    } else {
+                       res.download(path.join(__dirname, `${id}.pdf`), function(err) {
+                        if (err) {
+                          console.log(err); // Check error if you want
+                        }
+                        fs.unlink(path.join(__dirname, `${id}.pdf`), function(){
+                            console.log("File was deleted") // Callback
+                        });
+                      })
+                    }
+                });
+            }
+        });
+    }catch(e){
+        return res.send({error: 'Try again later'})
+    }
 })
 
 
