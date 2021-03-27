@@ -14,14 +14,16 @@ router.get('/', studentAuth ,async(req,res)=>{
         validSems=validSems.filter(sem=> sem < req.student.currentSemester)
         const subjects = await Subject.find({branch: req.student.branch, semester:{$in: validSems}})
         let settings = await Settings.findOne()
+        settings = settings.toObject()
         delete settings._id
         delete settings.notices
         delete settings.createdAt
         delete settings.updatedAt
+        delete settings.notices
         delete settings.__v
         return res.status(200).send({student: req.student, subjects: subjects, fees:settings})
     }catch(e){
-        res.send(errorHandler(e))
+        res.status(404).send({errorMessage: 'Cant fetch data, Please re-try !' })
     }
 })
 
@@ -31,9 +33,11 @@ router.get('/notices', studentAuth ,async(req,res)=>{
         if(!settings){
             return res.status(404).send()
         }
+        settings = settings.toObject()
+        settings.notices.forEach(notice => delete notice._id)
         return res.status(200).send({notices: settings.notices})
     }catch(e){
-        res.send(errorHandler(e))
+        res.status(400).send({errorMessage: 'Cant fetch notices now !'})
     }
 })
 

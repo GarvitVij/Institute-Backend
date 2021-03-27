@@ -24,17 +24,20 @@ const gtbpiFile = gtbpiFileUpload.single('data')
 router.post('/',async (req,res)=>{
     gtbpiFile(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
-            return res.status(415).send({ file: 0 })
+            console.log(err)
+            return res.status(415).send({ errorMessage: 'Please try again !' })
         } else if (err) {
-            return res.status(406).send({ file: 1 })
+            console.log(err)
+            return res.status(406).send({ errorMessage: 'Please try again !' })
         }
         try{
             data = await decrypt(req.file.buffer)
             req.data = JSON.parse(data.toString())
             const saved = await Student.insertMany(req.data)
-            res.send({saved},201)
+            res.status(200).send({saved})
         }catch(e){
-            res.status(201).send(errorHandler(e))
+            console.log(e)
+            res.status(400).send({errorMessage: 'Please try again !'})
         }
     })
 })
@@ -58,7 +61,8 @@ router.post('/encryptData', processValue(['data']),async(req,res)=> {
         res.set('Content-Type', 'application/gtbpi')
         res.status(200).send(file)
     }catch(e){
-        res.send(errorHandler(e))
+        console.log(e)
+        res.status(400).send({errorMessage: 'something went wrong, please try again !'})
     }
 })
 
@@ -71,9 +75,10 @@ router.delete('/batch', processValue(['batch']), async(req,res)=>{
         const batch = req.body.batch[2]
         const currentSemester = req.body.batch[3]
         const removed = await Student.deleteMany({branch: branch.trim(), timing: timing.trim(), batch: batch.trim(), currentSemester: currentSemester})
-        res.send()
+        res.statud(204).send({message: 'Deleted successfully!'})
     }catch(e){
-        res.send(201).send({error: "Something went wrong"})
+        console.log(e)
+        res.send(400).send({errorMessage: "Something went wrong"})
     }
 })
 
@@ -83,9 +88,10 @@ router.delete('/', processValue(['students']), async(req,res)=>{
         const isTrue = req.body.students.every(student => typeof(student) === "number")
         if(!isTrue) throw new Error()
         const removed = await Student.deleteMany({rollNumber: {$in: req.body.students}})
-        res.send(removed) 
+        res.status(200).send(removed) 
     }catch(e){
-        res.send({error:"something went wrong"})
+        console.log(e)
+        res.status(400).send({errorMessage:"something went wrong"})
     }
 })
 
@@ -93,9 +99,10 @@ router.patch('/incSem', async(req,res)=>{
     try{
         const updated = await Student.updateMany({currentSemester: {$lt: 6}}, { $inc: {'currentSemester': 1}, hasPaid: false })
         await Request.collection.drop()
-        res.send(updated)
+        res.status(200).send(updated)
     }catch(e){
-        return res.send({error: 'Something went wrong'})
+        console.log(e)
+        return res.status(400).send({errorMessage: 'Something went wrong'})
     }
 })
 
@@ -108,15 +115,16 @@ router.patch('/passHold', processValue(['students', 'type']) ,async(req,res)=>{
 
         if(req.body.type === "pass"){
             const removed = await Student.deleteMany({rollNumber: {$in: req.body.students}, currentSemester:{$gt: 5}})
-            res.send(removed) 
+            res.status(200).send(removed) 
         }
         if(req.body.type === "hold"){
             const updated = await Student.updateMany({rollNumber: {$in: req.body.students}, currentSemester:{$gt: 5}}, {$inc: {'currentSemester': 1}, hasPaid: false })
-            res.send(updated) 
+            res.status(200).send(updated) 
         }
 
     }catch(e){
-        return res.send({error: 'Something went wrong'})
+        console.log(e)
+        return res.status(400).send({errorMessage: 'Something went wrong'})
     }
 })
 
@@ -144,7 +152,8 @@ router.get('/batch', processValue(['batch']), async(req,res)=>{
         res.set('Content-Type', 'application/csv')
         res.status(200).send(dataBuffer)
     }catch(e){
-        res.send(201).send({error: "Something went wrong"})
+        console.log(e)
+        res.send(400).send({errorMessage: "Something went wrong"})
     }
 })
 

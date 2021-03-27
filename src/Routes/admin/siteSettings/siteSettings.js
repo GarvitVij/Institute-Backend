@@ -2,27 +2,27 @@ const express = require('express')
 const router = new express.Router()
 const SiteSettings = require('../../../Models/Settings')
 const processValue = require('../../../middlewares/processValue')
-const errorHandler = require('../../../utils/errorHandler/errorHandler')
-const logger = require('../../../logger/logger')
+const adminAuth = require('../../../middlewares/adminAuth')
 
 router.get('/', async(req,res)=>{
     try{
         const data = await SiteSettings.findOne()
         if(!data){throw new Error()}
-        res.send({data})
+        res.status(200).send({data})
     }catch(e){
-        res.send({error: 'cant fetch data, try again !'})
+        console.log(e)
+        res.status(400).send({error: 'cant fetch data, try again !'})
     }
 })
 
-router.patch('/notices', processValue(['notices']), async (req,res)=>{
+router.patch('/notices',adminAuth, processValue(['notices']), async (req,res)=>{
     try{
         if(!req.body.notices){
-            return res.send({error: "notices should be an array"})
+            return res.status(406).send({errorMessage: "notices should be an array"})
         }
         const settings = await SiteSettings.findOne()
         if(!settings){
-            return res.send({error: 'Please contact admin'})
+            return res.status(406).send({errorMessage: 'Please contact admin'})
         }    
         const err_notices = []
         const notices = []
@@ -36,12 +36,11 @@ router.patch('/notices', processValue(['notices']), async (req,res)=>{
         })   
         settings.notices = notices
         const savedNotices = await SiteSettings.findOneAndUpdate({notices: notices})
-        logger(204, "adminOne", "Updated Notices", 1)
-        res.send({savedNotices})
+        res.status(200).send({savedNotices})
     
     }catch(e){
         console.log(e)
-        res.send(errorHandler(e))
+        res.status(400).send({errorMessage: 'something went wrong ! try again !'})
     }
 })
 
@@ -51,17 +50,17 @@ router.patch('/fee',
                 try{
                     const settings = await SiteSettings.findOne()
                     if(!settings){
-                        return res.send({error: 'Please contact admin'})
+                        return res.status(406).send({errorMessage: 'Please contact admin'})
                     }    
                     values = Object.keys(req.body)
                     values.forEach(value => {
                         settings[value] = Number(req.body[value]) 
                     });
                     const savedSetting = await settings.save()
-                    res.send({savedSetting})
+                    res.status(200).send({savedSetting})
                 }catch(e){
                     console.log(e)
-                    res.send({error: 'cant update settings now'})
+                    res.status(400).send({error: 'cant update settings now'})
                 }
 })
 

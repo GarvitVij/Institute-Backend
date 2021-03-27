@@ -19,7 +19,7 @@ router.get('/', processValue(['paged', 'filters']) , async(req,res)=>{
     }
 })
 
-router.post('/', processValue(['id', 'success']), async(req,res)=>{
+router.patch('/', processValue(['id', 'success']), async(req,res)=>{
     try{
         let request = {} 
         if(!req.body.id || !(req.body.success === true || req.body.success === false)  ){

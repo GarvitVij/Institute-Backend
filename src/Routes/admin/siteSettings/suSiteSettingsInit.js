@@ -10,16 +10,16 @@ router.post('/', keyAuth, processValue(['force']) ,async (req,res)=>{
        
         if(init){
             if(req.body.force !== true){
-                return res.send({success: 'Already initialized'})
+                return res.status(406).send({success: 'Already initialized'})
             }
         }
         const notices = [{title: '', desc: ''},{title: '', desc: ''},{title: '', desc: ''},{title: '', desc: ''},{title: '', desc: ''}]
         init = new SiteSettings({notices})
         await init.save()
-        res.send({created: true})
+        res.status(200).send({created: true})
     }catch(e){
         console.log(e)
-        res.send({error: "Something went wrong, try again"})
+        res.status(400).send({errorMessage: "Something went wrong, try again"})
     }
 })
 

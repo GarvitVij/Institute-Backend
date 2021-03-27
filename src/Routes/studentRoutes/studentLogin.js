@@ -20,7 +20,7 @@ router.post('/login',
                     })
                     res.status(200).send({isSuccess: true})
                 }catch(e){
-                    res.status(401).send({isSuccess: false})
+                    res.status(401).send({errorMessage: 'Incorrect Credentials'})
                 }
 })
 
@@ -48,7 +48,7 @@ router.post('/resetpwd',processValue(['rollNumber']) ,async(req,res)=>{
         console.log(`${req.header('host')}${student.link}`)
         return res.status(200).send({message: "You will shortly receive an email !"})
     }catch(e){
-        return res.status(500).send(student.error)
+        return res.status(500).send({errorMessage: 'Cant reset password now !'})
     }
 })
 
@@ -56,9 +56,9 @@ router.patch('/resetpwd/:token', processValue(['password']), async(req,res)=>{
     try{
         const decryptedToken = decrypt(req.params.token)
         await Student.resetPassword(decryptedToken, req.body.password)
-        res.send(204).send()
+        res.status(204).send({message: 'Password changed !'})
     }catch(e){
-        res.status(500).send()
+        res.status(500).send({errorMessage: 'Cannot reset password now !'})
     }
 })
 

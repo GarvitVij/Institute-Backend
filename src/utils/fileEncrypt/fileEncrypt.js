@@ -16,9 +16,14 @@ async function encrypt(buffer) {
 }
 
 async function decrypt(buffer) {
-    var decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv)
-    var dec = Buffer.concat([decipher.update(buffer), decipher.final()]);
-    return dec;
+    try{
+        var decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv)
+        var dec = Buffer.concat([decipher.update(buffer), decipher.final()]);
+        return dec;
+    }catch(e){
+        console.log(e)
+    }
+ 
 }
 
 module.exports = {encrypt, decrypt}
