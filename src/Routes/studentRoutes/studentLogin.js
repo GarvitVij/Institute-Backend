@@ -20,6 +20,7 @@ router.post('/login',
                     })
                     res.status(200).send({isSuccess: true})
                 }catch(e){
+                    console.log(e)
                     res.status(401).send({errorMessage: 'Incorrect Credentials'})
                 }
 })
@@ -32,6 +33,7 @@ router.delete('/logout', studentAuth, async(req,res)=>{
         res.clearCookie('name')
         res.status(204).send()
     }catch(e){
+        console.log(e)
         res.clearCookie('token')
         res.status(200).send()
     }
@@ -48,7 +50,8 @@ router.post('/resetpwd',processValue(['rollNumber']) ,async(req,res)=>{
         console.log(`${req.header('host')}${student.link}`)
         return res.status(200).send({message: "You will shortly receive an email !"})
     }catch(e){
-        return res.status(500).send({errorMessage: 'Cant reset password now !'})
+        console.log(e)
+        return res.status(400).send({errorMessage: 'Cant reset password now !'})
     }
 })
 
@@ -58,7 +61,8 @@ router.patch('/resetpwd/:token', processValue(['password']), async(req,res)=>{
         await Student.resetPassword(decryptedToken, req.body.password)
         res.status(204).send({message: 'Password changed !'})
     }catch(e){
-        res.status(500).send({errorMessage: 'Cannot reset password now !'})
+        console.log(e)
+        res.status(400).send({errorMessage: 'Cannot reset password now !'})
     }
 })
 

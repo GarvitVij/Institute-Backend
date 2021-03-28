@@ -50,7 +50,7 @@ router.post('/resetpwd',processValue(['adminID']) ,async(req,res)=>{
         return res.status(200).send({message: "You will shortly receive an email !"})
     }catch(e){
         console.log(e)
-        return res.status(500).send({errorMessage: 'Cant reset password now !'})
+        return res.status(400).send({errorMessage: 'Cant reset password now !'})
     }
 })
 
@@ -61,7 +61,7 @@ router.patch('/resetpwd/:token', processValue(['password']), async(req,res)=>{
         res.status(204).send({message: 'Password changed !'})
     }catch(e){
         console.log(e)
-        res.status(500).send({errorMessage: 'Cannot reset password now !'})
+        res.status(400).send({errorMessage: 'Cannot reset password now !'})
     }
 })
 

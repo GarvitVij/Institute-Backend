@@ -75,10 +75,10 @@ router.delete('/batch', processValue(['batch']), async(req,res)=>{
         const batch = req.body.batch[2]
         const currentSemester = req.body.batch[3]
         const removed = await Student.deleteMany({branch: branch.trim(), timing: timing.trim(), batch: batch.trim(), currentSemester: currentSemester})
-        res.statud(204).send({message: 'Deleted successfully!'})
+        res.status(204).send({message: 'Deleted successfully!'})
     }catch(e){
         console.log(e)
-        res.send(400).send({errorMessage: "Something went wrong"})
+        res.status(400).send({errorMessage: "Something went wrong"})
     }
 })
 
@@ -153,7 +153,7 @@ router.get('/batch', processValue(['batch']), async(req,res)=>{
         res.status(200).send(dataBuffer)
     }catch(e){
         console.log(e)
-        res.send(400).send({errorMessage: "Something went wrong"})
+        res.status(400).send({errorMessage: "Something went wrong"})
     }
 })
 

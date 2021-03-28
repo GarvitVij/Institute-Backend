@@ -7,7 +7,7 @@ const adminAuth = async (req,res,next) => {
         const token = req.header('Authorization').replace('Bearer ', '')
         // const token = req.headers.cookie.replace("token=", "").replace("%3A", ":") || '' 
         if(!token){
-            return res.status(401).send({error: 'Please Authenticate'})
+            return res.status(401).send({errorMessage: 'Please Authenticate'})
         }
         const decodedToken = decrypt(token)
         const decoded = jwt.verify(decodedToken, process.env.JWT_TOKEN)
@@ -20,8 +20,9 @@ const adminAuth = async (req,res,next) => {
         res.cookie('name', admin.name)
         next()
     }catch(e){
+        console.log(e)
         res.clearCookie('name')
-        res.clearCookie('token').status(401).send({ error: 'Please Authenticate' })
+        res.clearCookie('token').status(401).send({ errorMessage: 'Please Authenticate' })
     }
    
 }

@@ -25,10 +25,11 @@ router.get('/getAll', studentAuth, async(req,res)=>{
         validSems=validSems.filter(sem=> sem < req.student.currentSemester)
         const subjects = await Subject.find({branch: req.student.branch, semester:{$in: validSems}})
         if(!receipts && !subjects){
-            return res.status(404).send({errorMessage: 'Cant find receipts now, Please re-try'})
+            return res.status(406).send({errorMessage: 'Cant find receipts now, Please re-try'})
         }
         return res.status(200).send({receipts, subjects})
     }catch(e){
+        console.log(e)
         return res.status(400).send({errorMessage: 'Try again later !'})
     }
 })
@@ -38,6 +39,7 @@ router.get('/getCurrent', studentAuth, async(req,res)=>{
         const receipt = await Receipt.find({rollNumber: req.student.rollNumber, semester: req.student.currentSemester, isSuccess: true})
         return res.status(200).send({receipt})
     }catch(e){
+        console.log(e)
         return res.status(400).send({errorMessage: 'Try again later'})
     }
 })
@@ -50,7 +52,7 @@ router.post('/pay',
                 try{
                     const settings = await Settings.findOne()
                     if(!settings){
-                        return res.status(500).send({error: 'Cant process request now'})
+                        return res.status(500).send({errorMessage: 'Cant process request now'})
                     }
                     let amount = 0
                     let notes = []
@@ -79,7 +81,7 @@ router.post('/pay',
 
 
                     if(receiptExsist){
-                        return res.send({savedReceipt: receiptExsist, student: req.student})
+                        return res.status(200).send({savedReceipt: receiptExsist, student: req.student})
                     }
 
                     const razorpayInstance = new Razorpay({
@@ -110,20 +112,21 @@ router.post('/pay',
                         date: (order.created_at * 1000)
                     })
                     const savedReceipt = await receipt.save()
-                    res.send({savedReceipt, student: req.student})
+                    res.status(200).send({savedReceipt, student: req.student})
     }catch(e){
+        console.log(e)
         return res.status(400).send({errorMessage: 'Please try again later'})
     }
 })
 
 router.post('/validate', studentAuth,processValue(['success', 'error', 'order_id']) ,async(req,res)=>{
     if(!req.body.success && !req.body.error){
-        return res.send({error: 'Cant process now'})
+        return res.status(400).send({errorMessage: 'Cant process now'})
     }
     try{
         const receipt = await Receipt.findOne({rollNumber: req.student.rollNumber, orderID:req.body.order_id })
         if(!receipt){
-            return res.send({error: 'something went wrong while fetching'})
+            return res.status(400).send({errorMessage: 'something went wrong while fetching'})
         }
     
         let updatedReceipt = {}
@@ -147,9 +150,10 @@ router.post('/validate', studentAuth,processValue(['success', 'error', 'order_id
             })
             updatedReceipt = await receipt.save()
         }  
-        return res.send({isSuccess: true})
+        return res.status(200).send({isSuccess: true})
     }catch(e){
-        return res.send({errorMessage: "Please contact collage, and don't pay the fee again {if money was deducted } "})
+        console.log(e)
+        return res.status(400).send({errorMessage: "Please contact collage, and don't pay the fee again {if money was deducted } "})
     }
     
 })
@@ -158,7 +162,6 @@ router.post('/validate', studentAuth,processValue(['success', 'error', 'order_id
 router.post('/generate', studentAuth, processValue(['receiptID']), async(req,res)=>{
     try{
         const receipt = await Receipt.find({receiptID: req.body.receiptID})
-        console.log(receipt)
         ejs.renderFile(path.join(__dirname, './views/', "report-template.ejs"),{}, (err, data) => {
             if (err) {
                   res.status(400).send({errorMessage: 'Cant generate PDF now !'});
@@ -176,7 +179,7 @@ router.post('/generate', studentAuth, processValue(['receiptID']), async(req,res
                 const id = nanoid()
                 pdf.create(data, options).toFile(path.join(__dirname, `./${id}.pdf`), function (err, data) {
                     if (err) {
-                        res.send(err);
+                        res.status(400).send(err);
                     } else {
                        res.download(path.join(__dirname, `${id}.pdf`), function(err) {
                         if (err) {
@@ -191,6 +194,7 @@ router.post('/generate', studentAuth, processValue(['receiptID']), async(req,res
             }
         });
     }catch(e){
+        console.log(e)
         return res.status(400).send({errorMessage: 'Try again later !'})
     }
 })

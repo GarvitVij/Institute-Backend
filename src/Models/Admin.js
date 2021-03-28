@@ -87,11 +87,9 @@ adminSchema.statics.recoverPassword = async (adminID) => {
         let token = jwt.sign({id: admin._id, email: admin.email}, process.env.JWT_TOKEN, {expiresIn: 600000})
         token = encrypt(token)
         admin.resetPasswordToken = token
-        console.log(admin)
         await admin.save()
         return ({link: `/reset-password/${token}`})
     }catch(e){
-        console.log(e)
         return ({error: 'cant reset password now, Please try again later'})
     }
 }

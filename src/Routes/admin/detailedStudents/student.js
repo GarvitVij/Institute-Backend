@@ -22,7 +22,8 @@ router.get('/branches', async(req,res)=>{
         ])
         console.log(branches)
     }catch(e){
-        return res.send({error: 'Something went wrong'})
+        console.log(e)
+        return res.status(400).send({errorMessage: 'Something went wrong'})
     }
 })
 
@@ -48,10 +49,10 @@ router.get('/students', processValue(['branch']), async(req,res)=>{
             data["receipts"] = receipts
             joinedData.push(data) 
         })
-        res.send(joinedData)
+        res.status(200).send(joinedData)
     }catch(e){
         console.log(e)
-        res.send(errorHandler(e))
+        res.status(400).send({errorMessage: 'Cant get data now, please try again later !'})
     }
 })
 

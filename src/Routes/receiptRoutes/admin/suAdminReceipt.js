@@ -9,7 +9,7 @@ const {nanoid} = require('nanoid')
 router.get('/getOrder', keyAuth, processValue(['id']), async (req, res)=>{
     
     if(!req.body.id){
-        return res.send({error:"Please provide an ID"})
+        return res.status(406).send({errorMessage:"Please provide an ID"})
     }
     try{
         var instance = new Razorpay({
@@ -19,17 +19,18 @@ router.get('/getOrder', keyAuth, processValue(['id']), async (req, res)=>{
         const order_id = req.body.id
         const order = instance.orders.fetch(order_id)
         if(!order){
-            return res.send({error: 'Cant find order matching the order id'})
+            return res.status(400).send({errorMessage: 'Cant find order matching the order id'})
         }
-        return res.send({order})
+        return res.status(200).send({order})
     }catch(e){
-        return res.send({error: 'Something went Wrong'})
+        console.log(e)
+        return res.status(400).send({errorMessage: 'Something went Wrong'})
     } 
 })
 
 router.get('/getPayments', keyAuth, processValue(['id']), async (req, res)=>{
     if(!req.body.id){
-        return res.send({error:"Please provide an ID"})
+        return res.status(406).send({errorMessage:"Please provide an ID"})
     }
     try{
         var instance = new Razorpay({
@@ -39,18 +40,19 @@ router.get('/getPayments', keyAuth, processValue(['id']), async (req, res)=>{
         const order_id = req.body.id
         const order = instance.orders.fetchPayments(order_id)
         if(!order){
-            return res.send({error: 'Cant find order matching the order id'})
+            return res.status(400).send({errorMessage: 'Cant find order matching the order id'})
         }
-        return res.send({order})
+        return res.status(200).send({order})
     }catch(e){
-        return res.send({error: 'Something went Wrong'})
+        console.log(e)
+        return res.status(400).send({errorMessage: 'Something went Wrong'})
     }
 
 })
 
 router.get('/getPaymentsDetails', keyAuth, processValue(['id']), async (req, res)=>{
     if(!req.body.id){
-        return res.send({error:"Please provide an ID"})
+        return res.status(406).send({errorMessage:"Please provide an ID"})
     }
     try{
         var instance = new Razorpay({
@@ -60,11 +62,12 @@ router.get('/getPaymentsDetails', keyAuth, processValue(['id']), async (req, res
         const payment_id = req.body.id
         const payment = instance.payments.fetch(payment_id)
         if(!payment){
-            return res.send({error: 'Cant find order matching the order id'})
+            return res.status(406).send({errorMessage: 'Cant find order matching the order id'})
         }
-        return res.send({payment})
+        return res.status(200).send({payment})
     }catch(e){
-        return res.send({error: 'Something went Wrong'})
+        console.log(e)
+        return res.status(400).send({errorMessage: 'Something went Wrong'})
     }
 
 })
@@ -73,11 +76,12 @@ router.get('/orderDetails', keyAuth, processValue(['receiptID']), async(req,res)
     try{
         const receipt = await Receipt.findOne({receiptID: req.body.receiptID})
         if(!receipt){
-            return res.send({error: 'No receipt Found'})
+            return res.status(406).send({errorMessage: 'No receipt Found'})
         }
-        return res.send({receipt})
+        return res.status(200).send({receipt})
     }catch(e){
-        return res.send({error: "Some error occurred"})
+        console.log(e)
+        return res.status(400).send({errorMessage: "Some error occurred"})
     }
 })
 
@@ -85,18 +89,19 @@ router.post('/fixSignature', keyAuth, processValue(['orderID']), async(req,res)=
     try{
         let receipt = await Receipt.findOne({orderID: req.body.orderID})
         if(!receipt){
-            return res.send({error: 'No receipt Found'})
+            return res.status(406).send({errorMessage: 'No receipt Found'})
         }
         if(receipt.isPartialSuccess === true){
-            return res.send({error: 'Receipt already signed'})
+            return res.status(406).send({errorMessage: 'Receipt already signed'})
         }
         receipt.isPartialSuccess = true
         receipt.isSuccess = true
         receipt.razorpayPaymentID = `Admin_${nanoid()}`
         receipt = await receipt.save()
-        return res.send({receipt})
+        return res.status(200).send({receipt})
     }catch(e){
-        return res.send({error: 'Some error occurred'})
+        console.log(e)
+        return res.status(400).send({errorMessage: 'Some error occurred'})
     }
 })
 

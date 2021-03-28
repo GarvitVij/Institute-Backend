@@ -11,7 +11,7 @@ router.get('/', async(req,res)=>{
         res.status(200).send({data})
     }catch(e){
         console.log(e)
-        res.status(400).send({error: 'cant fetch data, try again !'})
+        res.status(400).send({errorMessage: 'cant fetch data, try again !'})
     }
 })
 
@@ -60,7 +60,7 @@ router.patch('/fee',
                     res.status(200).send({savedSetting})
                 }catch(e){
                     console.log(e)
-                    res.status(400).send({error: 'cant update settings now'})
+                    res.status(400).send({errorMessage: 'cant update settings now'})
                 }
 })
 

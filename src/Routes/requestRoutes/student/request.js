@@ -13,13 +13,13 @@ router.post('/',
                 try{
                     const receipt = await Receipt.findOne({receiptID: req.body.receiptID, rollNumber: req.student.rollNumber, isValid: false, isSuccess: true})
                     if(!receipt){
-                        return res.status(400).send({errorMessage: 'No receipt was found'})
+                        return res.status(406).send({errorMessage: 'No receipt was found'})
                     }
                     if(receipt.isPartialSuccess === false){
-                        return res.status(400).send({errorMessage: 'Receipt is not Valid, contact collage'})
+                        return res.status(406).send({errorMessage: 'Receipt is not Valid, contact collage'})
                     }
                     if(!req.body.subjectFrom && !req.body.subjectTo){
-                        return res.status(400).send({errorMessage: 'Subjects not found'})
+                        return res.status(406).send({errorMessage: 'Subjects not found'})
                     }
                     let isInNotes = false
                     receipt.notes.forEach(note => {
@@ -32,7 +32,7 @@ router.post('/',
                         }
                     })
                     if(!isInNotes){
-                        return res.status(400).send({errorMessage: 'Subject not valid'})
+                        return res.status(406).send({errorMessage: 'Subject not valid'})
                     }
                     const odd = [1,3,5]
                     const even = [2,4,6]
@@ -51,7 +51,7 @@ router.post('/',
                         }
                     })
                     if(subOne === false || subTwo === false){
-                        return res.status(400).send({errorMessage: 'Invalid subjects'})
+                        return res.status(406).send({errorMessage: 'Invalid subjects'})
                     }
                     const request = new Request({
                         receiptID : req.body.receiptID,
@@ -64,6 +64,7 @@ router.post('/',
                     let savedRequest = await request.save()
                     return res.status(200).send({isSuccess: true})
                 }catch(e){
+                    console.log(e)
                     return res.status(400).send({errorMessage: 'Something went wrong'})
                 }
             }
