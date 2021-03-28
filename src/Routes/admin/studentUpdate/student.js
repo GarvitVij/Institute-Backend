@@ -2,11 +2,11 @@ const express = require('express')
 const router = new express.Router()
 const Student = require('../../../Models/Student')
 const Request = require('../../../Models/Update')
-const errorHandler = require('../../../utils/errorHandler/errorHandler')
 const processValue = require('../../../middlewares/processValue')
 const multer = require('multer')
 const { convertArrayToCSV } = require('convert-array-to-csv');
 const { encrypt , decrypt } = require('../../../utils/fileEncrypt/fileEncrypt')
+const adminAuth = require('../../../middlewares/adminAuth')
 
 const gtbpiFileUpload = multer({
     limits: {
@@ -21,7 +21,7 @@ const gtbpiFileUpload = multer({
 })
 const gtbpiFile = gtbpiFileUpload.single('data')
 
-router.post('/',async (req,res)=>{
+router.post('/', adminAuth ,async (req,res)=>{
     gtbpiFile(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
             console.log(err)
@@ -42,7 +42,7 @@ router.post('/',async (req,res)=>{
     })
 })
 
-router.post('/encryptData', processValue(['data']),async(req,res)=> {
+router.post('/encryptData', adminAuth, processValue(['data']),async(req,res)=> {
     try{
         if(typeof(req.body.data) === "string"){
             req.body.data = JSON.parse(req.body.data)
@@ -66,7 +66,7 @@ router.post('/encryptData', processValue(['data']),async(req,res)=> {
     }
 })
 
-router.delete('/batch', processValue(['batch']), async(req,res)=>{
+router.delete('/batch', adminAuth, processValue(['batch']), async(req,res)=>{
     try{
         if(typeof(req.body.batch) !== "string" || req.body.batch.split("|").length !== 4) throw new Error()
         req.body.batch = req.body.batch.split("|")
@@ -82,7 +82,7 @@ router.delete('/batch', processValue(['batch']), async(req,res)=>{
     }
 })
 
-router.delete('/', processValue(['students']), async(req,res)=>{
+router.delete('/', adminAuth, processValue(['students']), async(req,res)=>{
     try{
         if(typeof(req.body.students) !== "object") throw new Error()
         const isTrue = req.body.students.every(student => typeof(student) === "number")
@@ -95,7 +95,7 @@ router.delete('/', processValue(['students']), async(req,res)=>{
     }
 })
 
-router.patch('/incSem', async(req,res)=>{
+router.patch('/incSem', adminAuth, async(req,res)=>{
     try{
         const updated = await Student.updateMany({currentSemester: {$lt: 6}}, { $inc: {'currentSemester': 1}, hasPaid: false })
         await Request.collection.drop()
@@ -106,7 +106,7 @@ router.patch('/incSem', async(req,res)=>{
     }
 })
 
-router.patch('/passHold', processValue(['students', 'type']) ,async(req,res)=>{
+router.patch('/passHold', adminAuth, processValue(['students', 'type']) ,async(req,res)=>{
     try{
         if(typeof(req.body.students) !== "object" || typeof(req.body.type) !== "string") throw new Error()
         const validRollNumbers = req.body.students.every(student => typeof(student) === "number")
@@ -128,7 +128,7 @@ router.patch('/passHold', processValue(['students', 'type']) ,async(req,res)=>{
     }
 })
 
-router.get('/batch', processValue(['batch']), async(req,res)=>{
+router.get('/batch', adminAuth, processValue(['batch']), async(req,res)=>{
     try{
         if(typeof(req.body.batch) !== "string" || req.body.batch.split("|").length !== 4) throw new Error()
         req.body.batch = req.body.batch.split("|")
@@ -145,9 +145,7 @@ router.get('/batch', processValue(['batch']), async(req,res)=>{
             delete data.createdAt
             delete data.updatedAt
         })
-        console.log(data)
         const csvFromArrayOfObjects = convertArrayToCSV(data);
-        console.log(csvFromArrayOfObjects)
         const dataBuffer = Buffer.from(csvFromArrayOfObjects);
         res.set('Content-Type', 'application/csv')
         res.status(200).send(dataBuffer)

@@ -3,8 +3,9 @@ const router = new express.Router()
 const Request = require('../../../Models/Update')
 const processValue = require('../../../middlewares/processValue')
 const Receipt = require('../../../Models/Payment')
+const adminAuth = require('../../../middlewares/adminAuth')
 
-router.get('/', processValue(['paged', 'filters']) , async(req,res)=>{
+router.get('/', adminAuth, processValue(['paged', 'filters']) , async(req,res)=>{
     try{
         if(!req.body.paged){
             req.body.paged = {}
@@ -20,7 +21,7 @@ router.get('/', processValue(['paged', 'filters']) , async(req,res)=>{
     }
 })
 
-router.patch('/', processValue(['id', 'success']), async(req,res)=>{
+router.patch('/', adminAuth, processValue(['id', 'success']), async(req,res)=>{
     try{
         let request = {} 
         if(!req.body.id || !(req.body.success === true || req.body.success === false)  ){

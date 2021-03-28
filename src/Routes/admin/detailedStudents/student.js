@@ -3,10 +3,10 @@ const processValue = require('../../../middlewares/processValue')
 const mongoose = require('mongoose')
 const router = new express.Router()
 const Student = require('../../../Models/Student')
-const errorHandler = require('../../../utils/errorHandler/errorHandler')
+const adminAuth = require('../../../middlewares/adminAuth')
 const Receipt = require('../../../Models/Payment')
 
-router.get('/branches', async(req,res)=>{
+router.get('/branches', adminAuth, async(req,res)=>{
     try{
         const branches = await Student.aggregate([
             {
@@ -27,7 +27,7 @@ router.get('/branches', async(req,res)=>{
     }
 })
 
-router.get('/students', processValue(['branch']), async(req,res)=>{
+router.get('/students',adminAuth, processValue(['branch']), async(req,res)=>{
     try{
         const filters = req.body.branch.split(' | ')
         const studentData = await Student.find({branch: filters[0], timing: filters[1], batch: filters[2], currentSemester: filters[3] })

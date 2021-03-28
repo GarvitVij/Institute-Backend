@@ -10,7 +10,7 @@ router.post('/', keyAuth, processValue(['force']) ,async (req,res)=>{
        
         if(init){
             if(req.body.force !== true){
-                return res.status(406).send({success: 'Already initialized'})
+                return res.status(406).send({errorMessage: 'Already initialized'})
             }
         }
         const notices = [{title: '', desc: ''},{title: '', desc: ''},{title: '', desc: ''},{title: '', desc: ''},{title: '', desc: ''}]

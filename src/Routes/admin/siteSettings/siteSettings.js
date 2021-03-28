@@ -4,7 +4,7 @@ const SiteSettings = require('../../../Models/Settings')
 const processValue = require('../../../middlewares/processValue')
 const adminAuth = require('../../../middlewares/adminAuth')
 
-router.get('/', async(req,res)=>{
+router.get('/',adminAuth, async(req,res)=>{
     try{
         const data = await SiteSettings.findOne()
         if(!data){throw new Error()}
@@ -45,6 +45,7 @@ router.patch('/notices',adminAuth, processValue(['notices']), async (req,res)=>{
 })
 
 router.patch('/fee', 
+            adminAuth,
             processValue(['normalFee', 'backExamFee','maxPerSemesterFee','minLateFeeDate','maxLateFeeDate','minLateFee', 'maxLateFee' ]), 
             async(req,res)=>{
                 try{

@@ -1,10 +1,11 @@
 const express = require('express')
 const { nanoid } = require('nanoid')
+const keyAuth = require('../../middlewares/keyAuth')
 const processValue = require('../../middlewares/processValue')
 const router  = express.Router()
 const Admin = require('../../Models/Admin')
 
-router.get('/allAdmins', async(req,res)=>{
+router.get('/allAdmins', keyAuth, async(req,res)=>{
     try{
         const admins = await Admin.find()
         res.status(200).send({admins})
@@ -14,7 +15,7 @@ router.get('/allAdmins', async(req,res)=>{
     }   
 })
 
-router.get('/admin',processValue(['adminID']), async(req,res)=> {
+router.get('/admin', keyAuth , processValue(['adminID']), async(req,res)=> {
     try{
         const admin = await Admin.findOne({adminID: req.body.adminID })
         if(!admin){
@@ -27,7 +28,7 @@ router.get('/admin',processValue(['adminID']), async(req,res)=> {
     }
 })
 
-router.post('/addAdmin', processValue(['adminID', 'name', 'email']), async(req,res)=>{
+router.post('/addAdmin', keyAuth, processValue(['adminID', 'name', 'email']), async(req,res)=>{
     try{
         const password = nanoid()
         let admin = new Admin({...req.body, password})
@@ -40,9 +41,8 @@ router.post('/addAdmin', processValue(['adminID', 'name', 'email']), async(req,r
     }
 })
 
-router.patch('/adminOperations', processValue(['allowOperation', 'adminID']), async(req,res)=>{
+router.patch('/adminOperations', keyAuth, processValue(['allowOperation', 'adminID']), async(req,res)=>{
     try{
-        console.log(req.body.allowOperation)
         if( typeof req.body.allowOperation !== "boolean"  ){
             return res.status(406).send({errorMessage: 'Invalid Body'})
         }
@@ -57,7 +57,7 @@ router.patch('/adminOperations', processValue(['allowOperation', 'adminID']), as
     }
 })
 
-router.delete('/admin', processValue(['adminID']), async(req,res)=>{
+router.delete('/admin', keyAuth, processValue(['adminID']), async(req,res)=>{
     try{
         const admin  = await Admin.findOneAndDelete({adminID: req.body.adminID})
         if(!admin){

@@ -1,9 +1,10 @@
 const express = require('express')
+const adminAuth = require('../../../middlewares/adminAuth')
 const processValue = require('../../../middlewares/processValue')
 const router = new express.Router()
 const Receipt = require('../../../Models/Payment')
 
-router.get('/validate', processValue(['semester', 'rollNumber', 'receiptNumber' ]), async(req,res)=>{
+router.get('/validate', adminAuth, processValue(['semester', 'rollNumber', 'receiptNumber' ]), async(req,res)=>{
     try{
         const receipt = await Receipt.findOne({semester: req.body.semester, rollNumber: req.body.rollNumber, receiptID: req.body.receiptNumber, isSuccess: true})
         if(!receipt){
@@ -22,7 +23,7 @@ router.get('/validate', processValue(['semester', 'rollNumber', 'receiptNumber' 
     }
 })
 
-router.post('/validate', processValue(['orderID', 'paymentID']), async(req,res)=>{
+router.post('/validate', adminAuth, processValue(['orderID', 'paymentID']), async(req,res)=>{
     try{
         const receipt = await Receipt.findOne({orderID: req.body.orderID, razorpayPaymentID: req.body.paymentID})
         if(!receipt){
@@ -43,7 +44,7 @@ router.post('/validate', processValue(['orderID', 'paymentID']), async(req,res)=
     }
 })
 
-router.get('/', processValue(['paged', 'filters']) , async(req,res)=>{
+router.get('/', adminAuth, processValue(['paged', 'filters']) , async(req,res)=>{
     try{
         if(!req.body.paged){
             req.body.paged = {}
