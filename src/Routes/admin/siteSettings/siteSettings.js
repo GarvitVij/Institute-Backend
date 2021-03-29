@@ -18,10 +18,12 @@ router.get('/',adminAuth, async(req,res)=>{
 router.patch('/notices',adminAuth, processValue(['notices']), async (req,res)=>{
     try{
         if(!req.body.notices){
+            logger(406, req.admin.adminID,  ' Update notices ', 3)
             return res.status(406).send({errorMessage: "notices should be an array"})
         }
         const settings = await SiteSettings.findOne()
         if(!settings){
+            logger(406, req.admin.adminID,  ' Update notices ', 3)
             return res.status(406).send({errorMessage: 'Please contact admin'})
         }    
         const err_notices = []
@@ -37,10 +39,11 @@ router.patch('/notices',adminAuth, processValue(['notices']), async (req,res)=>{
         settings.notices = notices
         const savedNotices = await SiteSettings.findOneAndUpdate({notices: notices})
         res.status(200).send({savedNotices})
-    
+        logger(200, req.admin.adminID, ' Update notices ', 1)
     }catch(e){
         console.log(e)
         res.status(400).send({errorMessage: 'something went wrong ! try again !'})
+        logger(400, req.admin.adminID,  ' Update notices ', 3)
     }
 })
 
@@ -51,6 +54,7 @@ router.patch('/fee',
                 try{
                     const settings = await SiteSettings.findOne()
                     if(!settings){
+                        logger(406, req.admin.adminID,  ' Update fee ', 3)
                         return res.status(406).send({errorMessage: 'Please contact admin'})
                     }    
                     values = Object.keys(req.body)
@@ -59,9 +63,11 @@ router.patch('/fee',
                     });
                     const savedSetting = await settings.save()
                     res.status(200).send({savedSetting})
+                    logger(200, req.admin.adminID, ' Update fee ', 1)
                 }catch(e){
                     console.log(e)
                     res.status(400).send({errorMessage: 'cant update settings now'})
+                    logger(400, req.admin.adminID,  ' Update fee ', 3)
                 }
 })
 

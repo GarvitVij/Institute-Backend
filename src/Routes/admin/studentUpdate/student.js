@@ -24,10 +24,10 @@ const gtbpiFile = gtbpiFileUpload.single('data')
 router.post('/', adminAuth ,async (req,res)=>{
     gtbpiFile(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
-            console.log(err)
+            logger(406, req.admin.adminID,  ' Add students ', 3)
             return res.status(415).send({ errorMessage: 'Please try again !' })
         } else if (err) {
-            console.log(err)
+            logger(406, req.admin.adminID,  ' Add students ', 3)
             return res.status(406).send({ errorMessage: 'Please try again !' })
         }
         try{
@@ -35,14 +35,16 @@ router.post('/', adminAuth ,async (req,res)=>{
             req.data = JSON.parse(data.toString())
             const saved = await Student.insertMany(req.data)
             res.status(200).send({saved})
+            logger(200, req.admin.adminID, ' Add students ', 1)
         }catch(e){
             console.log(e)
             res.status(400).send({errorMessage: 'Please try again !'})
+            logger(400, req.admin.adminID,  ' Add students ', 3)
         }
     })
 })
 
-router.post('/encryptData', adminAuth, processValue(['data']),async(req,res)=> {
+router.post('/encryptData', processValue(['data']),async(req,res)=> {
     try{
         if(typeof(req.body.data) === "string"){
             req.body.data = JSON.parse(req.body.data)
@@ -76,9 +78,11 @@ router.delete('/batch', adminAuth, processValue(['batch']), async(req,res)=>{
         const currentSemester = req.body.batch[3]
         const removed = await Student.deleteMany({branch: branch.trim(), timing: timing.trim(), batch: batch.trim(), currentSemester: currentSemester})
         res.status(204).send({message: 'Deleted successfully!'})
+        logger(204, req.admin.adminID,  ' Deleted students [ Batch ] ', 2)
     }catch(e){
         console.log(e)
         res.status(400).send({errorMessage: "Something went wrong"})
+        logger(400, req.admin.adminID,  ' Deleted students [ Batch ] ', 3)
     }
 })
 
@@ -89,9 +93,11 @@ router.delete('/', adminAuth, processValue(['students']), async(req,res)=>{
         if(!isTrue) throw new Error()
         const removed = await Student.deleteMany({rollNumber: {$in: req.body.students}})
         res.status(200).send(removed) 
+        logger(200, req.admin.adminID, ' Delete students [ Individually ] ', 1)
     }catch(e){
         console.log(e)
         res.status(400).send({errorMessage:"something went wrong"})
+        logger(400, req.admin.adminID,  '  Delete students [ Individually ] ', 3)
     }
 })
 
@@ -100,9 +106,11 @@ router.patch('/incSem', adminAuth, async(req,res)=>{
         const updated = await Student.updateMany({currentSemester: {$lt: 6}}, { $inc: {'currentSemester': 1}, hasPaid: false })
         await Request.collection.drop()
         res.status(200).send(updated)
+        logger(200, req.admin.adminID, ' Increment semester ', 1)
     }catch(e){
         console.log(e)
         return res.status(400).send({errorMessage: 'Something went wrong'})
+        logger(400, req.admin.adminID,  ' Increment semester ', 3)
     }
 })
 
@@ -116,15 +124,18 @@ router.patch('/passHold', adminAuth, processValue(['students', 'type']) ,async(r
         if(req.body.type === "pass"){
             const removed = await Student.deleteMany({rollNumber: {$in: req.body.students}, currentSemester:{$gt: 5}})
             res.status(200).send(removed) 
+            logger(200, req.admin.adminID, ' Pass/Hold students ', 1)
         }
         if(req.body.type === "hold"){
             const updated = await Student.updateMany({rollNumber: {$in: req.body.students}, currentSemester:{$gt: 5}}, {$inc: {'currentSemester': 1}, hasPaid: false })
-            res.status(200).send(updated) 
+            res.status(204).send(updated) 
+            logger(204, req.admin.adminID, ' Pass/Hold students ', 2)
         }
 
     }catch(e){
         console.log(e)
-        return res.status(400).send({errorMessage: 'Something went wrong'})
+        res.status(400).send({errorMessage: 'Something went wrong'})
+        logger(400, req.admin.adminID,  ' Pass/Hold students ', 3)
     }
 })
 

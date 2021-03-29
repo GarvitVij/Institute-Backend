@@ -27,20 +27,25 @@ router.post('/validate', adminAuth, processValue(['orderID', 'paymentID']), asyn
     try{
         const receipt = await Receipt.findOne({orderID: req.body.orderID, razorpayPaymentID: req.body.paymentID})
         if(!receipt){
+            logger(406, req.admin.adminID,  ' Validate receipt ', 3)
             return res.status(406).send({errorMessage: 'cant find any receipt!'})
         }
         if(receipt.isPartialSuccess===false){
+            logger(406, req.admin.adminID,  ' Validate receipt ', 3)
             return res.status(406).send({errorMessage: 'Payment doesnt seems legit, contact admin !'})
         }
         if(receipt.isValid === true){
+            logger(406, req.admin.adminID,  ' Validate receipt ', 3)
             return res.status(200).send({success: 'Receipt is already validated'})
         }
         receipt.isValid = true
         const savedReceipt = await receipt.save()
-        return res.status(200).send({savedReceipt})
+        res.status(200).send({savedReceipt})
+        logger(200, req.admin.adminID, ' Validate receipt ', 1)
     }catch(e){
         console.log(e)
-        return res.status(400).send({errorMessage: 'Cant updated receipt now! something went wrong'})
+        res.status(400).send({errorMessage: 'Cant updated receipt now! something went wrong'})
+        logger(400, req.admin.adminID,  ' Validate receipt ', 3)
     }
 })
 

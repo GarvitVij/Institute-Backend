@@ -22,7 +22,3 @@ const logger = async (statusCode, by, operationName, descCode) => {
 }
 
 module.exports = logger
-
-//  logger(204, req.admin.adminID, "Updated Notices", 2)
-//  logger(406, req.admin.adminID, "Updated Notices", 3)
-//  logger(400, req.admin.adminID, "Updated Notices", 4)

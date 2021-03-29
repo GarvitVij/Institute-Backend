@@ -25,33 +25,41 @@ router.patch('/', adminAuth, processValue(['id', 'success']), async(req,res)=>{
     try{
         let request = {} 
         if(!req.body.id || !(req.body.success === true || req.body.success === false)  ){
+            logger(406, req.admin.adminID,  ' Accept request ', 3)
             return res.status(406).send({errorMessage: 'Invalid body'})
         }
         if(req.body.success === true){
             request = await Request.findByIdAndUpdate(req.body.id, {isValid: true})
                 if(!request){
+                    logger(406, req.admin.adminID,  ' Accept request ', 3)
                     return res.status(406).send({errorMessage: 'something went wrong updating request'})
                 }
             let receipt = await Receipt.findOne({receiptID: request.receiptID})
                 if(!receipt){
+                    logger(406, req.admin.adminID,  ' Accept request ', 3)
                     return res.status(406).send({errorMessage: 'something went wrong'})
                 } 
             receipt.notes.map((note,index) => {
                 receipt.notes[index] = note.replace(request.from, request.to)})
             const updatedReceipt = await Receipt.findOneAndUpdate({receiptID: request.receiptID}, {notes: receipt.notes})
             if(!updatedReceipt){
+                logger(406, req.admin.adminID,  ' Accept request ', 3)
                 return res.status(406).send({errorMessage: 'something went wrong'})
             } 
+            logger(200, req.admin.adminID, ' Accept request ', 1)
             return res.status(200).send({success: true})
         }else if(req.body.success === false){
             request = await Request.findByIdAndDelete(req.body.id)
+            logger(200, req.admin.adminID, ' Accept request ', 1)
             return res.status(200).send(request)
         }else{
+            logger(400, req.admin.adminID,  ' Accept request ', 3)
             return res.status(400).send({errorMessage: 'try again later'})
         }
     }catch(e){
         console.log(e)
-        return res.status(400).send({errorMessage: 'Something went wrong'})
+        res.status(400).send({errorMessage: 'Something went wrong'})
+        logger(400, req.admin.adminID,  ' Accept request ', 3)
     }
 })
 
