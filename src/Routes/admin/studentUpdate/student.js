@@ -68,6 +68,29 @@ router.post('/encryptData', processValue(['data']),async(req,res)=> {
     }
 })
 
+router.patch('/resetPwdStudent', adminAuth, processValue(['rollNumber']), async(req,res)=>{
+    try{
+        let student = await Student.findOne({rollNumber: req.body.rollNumber})
+        if(!student){
+            logger(406, req.admin.adminID,  ' Reset student password ', 3)
+            return res.status(406).send({errorMessage: 'something went wrong'})
+        }
+        student.password = `${student.name.substring(0,4)}${student.rollNumber.substring(6,10)}`
+        console.log(student.password)
+        student = await student.save()
+        if(!student){
+            logger(406, req.admin.adminID,  ' Reset student password ', 3)
+            return res.status(406).send({errorMessage: 'something went wrong'})
+        }
+        res.status(200).send({message: 'Password changed succesfully'})
+        logger(200, req.admin.adminID, '  Reset student password ', 1)
+    }catch(e){
+        console.log(e)
+        res.status(400).send({errorMessage: 'Something went wrong'})
+        logger(400, req.admin.adminID,  '  Reset student password  ', 3)
+    }
+})
+
 router.delete('/batch', adminAuth, processValue(['batch']), async(req,res)=>{
     try{
         if(typeof(req.body.batch) !== "string" || req.body.batch.split("|").length !== 4) throw new Error()
