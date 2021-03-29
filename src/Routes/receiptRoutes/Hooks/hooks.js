@@ -19,6 +19,11 @@ router.post('/authorized', hooksValidation , async(req,res)=>{
             receipt = await Receipt.findOne({rollNumber: rollNumber, notes:req.body.payload.payment.entity.notes })
             receipt.isSuccess = true
         }
+        if(req.body.payload.payment.entity.amount !==  receipt.amount){
+            console.log("Amount MisMatch : ", req.body.payload)
+            console.log("receipt", receipt)
+            return 0
+        }
         res.send()
         receipt.isPartialSuccess = true
         receipt.razorpayPaymentID = req.body.payload.payment.entity.id

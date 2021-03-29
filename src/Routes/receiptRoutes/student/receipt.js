@@ -72,7 +72,7 @@ router.post('/pay',
                     amount =  amount + lateFeeCheck
 
 
-                    const receiptExsist = await Receipt.findOne({
+                    let receiptExsist = await Receipt.findOne({
                         rollNumber: req.student.rollNumber,
                         semester: req.body.semester,
                         notes: notes,
@@ -81,6 +81,19 @@ router.post('/pay',
 
 
                     if(receiptExsist){
+                        receiptExsist = receiptExsist.toObject()
+                        delete receiptExsist.isValid
+                        delete receiptExsist.isPartialSuccess 
+                        delete receiptExsist._id
+                        delete receiptExsist.rollNumber
+                        delete receiptExsist.isSuccess
+                        delete receiptExsist.isSigned
+                        delete receiptExsist.razorpayPaymentID
+                        delete receiptExsist.currency
+                        delete receiptExsist.paymentErrors
+                        delete receiptExsist.createdAt
+                        delete receiptExsist.updatedAt
+                        delete receiptExsist.__v
                         return res.status(200).send({savedReceipt: receiptExsist, student: req.student})
                     }
 
@@ -112,7 +125,7 @@ router.post('/pay',
                         date: (order.created_at * 1000)
                     })
                     const savedReceipt = await receipt.save()
-                    res.status(200).send({savedReceipt, student: req.student})
+                    res.status(200).send({savedReceipt: savedReceipt, student: req.student})
     }catch(e){
         console.log(e)
         return res.status(400).send({errorMessage: 'Please try again later'})
