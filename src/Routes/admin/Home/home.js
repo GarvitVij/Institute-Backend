@@ -12,14 +12,16 @@ router.get('/',async(req,res)=>{
         const even = [2,4,6,8,10]
         isSem =  moment().month() + 1 < 7 ? even : odd  
 
+        isSem = odd
+
         //Chart One
         const paid = await Student.find({ currentSemester: { $in: odd }}).countDocuments({hasPaid: true})
         let notPaid = await Student.find({hasPaid: false, currentSemester: { $in: odd }}).select(['rollNumber'])
         notPaid = notPaid.map(notPaidRollNumber => { return notPaidRollNumber['rollNumber']})
         const loggedIn = await Receipt.countDocuments({rollNumber: {$in: notPaid}})
-        const total = paid + notPaid.length
-        const notLoggedIn = total - (loggedIn + paid)
-        const chartOne = {paid: paid, notLoggedIn:notLoggedIn, loggedIn: loggedIn, total: total }
+        const chartOneTotal = paid + notPaid.length
+        const notLoggedIn = chartOneTotal - (loggedIn + paid)
+        const chartOne = {paid: paid, notLoggedIn:notLoggedIn, loggedIn: loggedIn, total: chartOneTotal }
 
         //Chart Two
         let computerRollNumber = await Student.find({currentSemester: {$in: odd}, branch: 'Computer Engineering'}).select(['rollNumber'])
@@ -42,19 +44,175 @@ router.get('/',async(req,res)=>{
 
         const chartTwo = {computerPaidAmount, autoPaidAmount, ecePaidAmount}
 
-        res.send({chartTwo})
-
         //Chart Three 
 
-         
+        async function computer() {
+            let [computerStudentYearOne, computerStudentYearTwo, computerStudentYearThree] = await Promise.all([Student.find({currentSemester: isSem[0], branch:'Computer Engineering', hasPaid: true}).select(['rollNumber']),Student.find({currentSemester: isSem[1], branch:'Computer Engineering', hasPaid: true}).select(['rollNumber']),Student.find({currentSemester: isSem[2], branch:'Computer Engineering', hasPaid: true}).select(['rollNumber'])])
+            return{computerStudentYearOne, computerStudentYearTwo, computerStudentYearThree}
+        }
 
+        let computerStudentYrOne = [], computerStudentYrTwo = [], computerStudentYrThree = []
+
+        await computer().then((data)=>{
+            computerStudentYrOne = data.computerStudentYearOne.map(rollNo => rollNo.rollNumber)
+            computerStudentYrTwo = data.computerStudentYearTwo.map(rollNo => rollNo.rollNumber)
+            computerStudentYrThree = data.computerStudentYearThree.map(rollNo => rollNo.rollNumber)
+        }).catch((err)=>{console.log(err)})
+
+
+        async function auto() {
+            let [autoStudentYearOne, autoStudentYearTwo, autoStudentYearThree] = await Promise.all([Student.find({currentSemester: isSem[0], branch:'Automobile Engineering', hasPaid: true}).select(['rollNumber']),Student.find({currentSemester: isSem[1], branch:'Automobile Engineering', hasPaid: true}).select(['rollNumber']),Student.find({currentSemester: isSem[2], branch:'Automobile Engineering', hasPaid: true}).select(['rollNumber'])])
+            return{autoStudentYearOne, autoStudentYearTwo, autoStudentYearThree}
+        }
+
+        let autoStudentYrOne = [], autoStudentYrTwo = [], autoStudentYrThree = []
+        
+        await auto().then((data)=>{
+            autoStudentYrOne = data.autoStudentYearOne.map(rollNo => rollNo.rollNumber)
+            autoStudentYrTwo = data.autoStudentYearTwo.map(rollNo => rollNo.rollNumber)
+            autoStudentYrThree = data.autoStudentYearThree.map(rollNo => rollNo.rollNumber)
+        }).catch((err)=>{console.log(err)})
+
+        async function ece() {
+            let [eceStudentYearOne, eceStudentYearTwo, eceStudentYearThree] = await Promise.all([Student.find({currentSemester: isSem[0], branch:'Electronics and Communication Engineering', hasPaid: true}).select(['rollNumber']),Student.find({currentSemester: isSem[1], branch:'Electronics and Communication Engineering', hasPaid: true}).select(['rollNumber']),Student.find({currentSemester: isSem[2], branch:'Electronics and Communication Engineering', hasPaid: true}).select(['rollNumber'])])
+            return{eceStudentYearOne, eceStudentYearTwo, eceStudentYearThree}
+        }
+
+        let eceStudentYrOne = [], eceStudentYrTwo = [], eceStudentYrThree = []
+        
+        await ece().then((data)=>{
+            eceStudentYrOne = data.eceStudentYearOne.map(rollNo => rollNo.rollNumber)
+            eceStudentYrTwo = data.eceStudentYearTwo.map(rollNo => rollNo.rollNumber)
+            eceStudentYrThree = data.eceStudentYearThree.map(rollNo => rollNo.rollNumber)
+        }).catch((err)=>{console.log(err)})
+
+        var evenDate = new Date(moment().year(),1 ,01 );
+        var oddDate = new Date(moment().year(), 7, 01);
+        dated =  moment().month() + 1 < 7 ? evenDate : oddDate  
+
+        const rollNumbers = [
+            ...computerStudentYrOne, 
+            ...computerStudentYrTwo, 
+            ...computerStudentYrThree, 
+            ...autoStudentYrOne, 
+            ...autoStudentYrTwo, 
+            ...autoStudentYrThree,
+            ...eceStudentYrOne,
+            ...eceStudentYrTwo,
+            ...eceStudentYrThree
+        ]
+
+        const totalFromDatabase = await Receipt.find({rollNumber: {$in: rollNumbers}, isSuccess: true }).select(['amount'])
+        const settings = await Setting.findOne({})
+        let chartThreeTotal = 0
+        totalFromDatabase.map(paid => {chartThreeTotal = chartThreeTotal + ( paid.amount / 100 ) })
+        
+        CY1 = settings.normalFee * computerStudentYrOne.length
+        chartThreeTotal = chartThreeTotal - CY1
+        CY2 = settings.normalFee * computerStudentYrTwo.length
+        chartThreeTotal = chartThreeTotal - CY2
+        CY3 = settings.normalFee * computerStudentYrThree.length
+        chartThreeTotal = chartThreeTotal - CY3
+
+        AY1 = settings.normalFee * autoStudentYrOne.length
+        chartThreeTotal = chartThreeTotal - AY1
+        AY2 = settings.normalFee * autoStudentYrTwo.length
+        chartThreeTotal = chartThreeTotal - AY2
+        AY3 = settings.normalFee * autoStudentYrThree.length
+        chartThreeTotal = chartThreeTotal - AY3
+
+        EY1 = settings.normalFee * eceStudentYrOne.length
+        chartThreeTotal = chartThreeTotal - EY1
+        EY2 = settings.normalFee * eceStudentYrTwo.length
+        chartThreeTotal = chartThreeTotal - EY2
+        EY3 = settings.normalFee * eceStudentYrThree.length
+        chartThreeTotal = chartThreeTotal - EY3
+         
+        const chartThree = { yearOne: [CY1, AY1, EY1], yearTwo: [CY2,AY2,EY2], yearThree: [CY3,AY3,EY3], back: chartThreeTotal }
 
         //Data 
 
+        async function data (){
+            let [
+                compYrOne, compYrTwo, compYrThree,
+                autoYrOne, autoYrTwo, autoYrThree,
+                eceYrOne, eceYrTwo, eceYrThree
+            ] = await Promise.all([
+                Student.countDocuments({currentSemester: isSem[0], branch:'Computer Engineering'}),
+                Student.countDocuments({currentSemester: isSem[1], branch:'Computer Engineering'}),
+                Student.countDocuments({currentSemester: isSem[2], branch:'Computer Engineering'}),
+                Student.countDocuments({currentSemester: isSem[0], branch:'Automobile Engineering'}),
+                Student.countDocuments({currentSemester: isSem[1], branch:'Automobile Engineering'}),
+                Student.countDocuments({currentSemester: isSem[2], branch:'Automobile Engineering'}),
+                Student.countDocuments({currentSemester: isSem[0], branch:'Electronics and Communication Engineering'}),
+                Student.countDocuments({currentSemester: isSem[1], branch:'Electronics and Communication Engineering'}),
+                Student.countDocuments({currentSemester: isSem[2], branch:'Electronics and Communication Engineering'})
+            ])
+            return{  compYrOne, compYrTwo, compYrThree,
+                autoYrOne, autoYrTwo, autoYrThree,
+                eceYrOne, eceYrTwo, eceYrThree}
+        }
 
-        //Notices
+        const accordionData = {}
+        await data().then((data)=>{
+            yearOne ={
+                computerEngineering  : {
+                    total: data.compYrOne,
+                    paid: computerStudentYrOne.length
+                },
+                autoMobileEngineering : {
+                    total : data.autoYrOne,
+                    paid: autoStudentYrOne.length
+                },
+                eceEngineering : {
+                    total: data.eceYrOne,
+                    paid: eceStudentYrOne.length
+                } 
+            },
+            yearTwo ={
+                computerEngineering  : {
+                    total: data.compYrTwo,
+                    paid: computerStudentYrTwo.length
+                },
+                autoMobileEngineering : {
+                    total : data.autoYrTwo,
+                    paid: autoStudentYrTwo.length
+                },
+                eceEngineering : {
+                    total: data.eceYrTwo,
+                    paid: eceStudentYrTwo.length
+                } 
+            },
+            yearThree ={
+                computerEngineering  : {
+                    total: data.compYrThree,
+                    paid: computerStudentYrThree.length
+                },
+                autoMobileEngineering : {
+                    total : data.autoYrThree,
+                    paid: autoStudentYrThree.length
+                },
+                eceEngineering : {
+                    total: data.eceYrThree,
+                    paid: eceStudentYrThree.length
+                } 
+            }
+            accordionData.yearOne = yearOne
+            accordionData.yearTwo = yearTwo
+            accordionData.yearThree = yearThree
+        })
 
+        //Notices - already from notices
+        let settingsObj = settings.toObject()
+        settingsObj.notices = settingsObj.notices.map(notice => { return {title: notice.title, desc: notice.desc}} )
 
+        res.status(200).send({
+            chartOne,
+            chartTwo,
+            chartThree,
+            accordionData,
+            notices: settingsObj.notices
+        })
     }catch(e){
         console.log(e)
         res.status(400).send({errorMessage: 'Something went wrong !'})
