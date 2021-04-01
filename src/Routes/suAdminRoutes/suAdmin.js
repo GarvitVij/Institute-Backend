@@ -4,6 +4,7 @@ const keyAuth = require('../../middlewares/keyAuth')
 const processValue = require('../../middlewares/processValue')
 const router  = express.Router()
 const Admin = require('../../Models/Admin')
+const {teacherWelcomeEmail} = require('../../utils/email/email')
 
 router.get('/allAdmins', keyAuth, async(req,res)=>{
     try{
@@ -34,6 +35,7 @@ router.post('/addAdmin', keyAuth, processValue(['adminID', 'name', 'email']), as
         let admin = new Admin({...req.body, password})
         admin = await admin.save()
         admin.password = password
+        teacherWelcomeEmail(admin.email,admin.adminID, admin.password, admin.name)
         res.status(200).send({admin})
     }catch(e){
         console.log(e)

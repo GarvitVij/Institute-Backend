@@ -4,6 +4,7 @@ const router = express.Router()
 const {encrypt, decrypt} = require('../../utils/textEncryption/textEncrypt')
 const adminAuth = require('../../middlewares/adminAuth')
 const processValue = require('../../middlewares/processValue')
+const { resetPassword } = require('../../utils/email/email')
 
 router.post('/login', processValue(['ID', 'password']),async(req,res)=>{
     try{
@@ -45,8 +46,7 @@ router.post('/resetpwd',processValue(['adminID']) ,async(req,res)=>{
         if(!admin.link){
            throw new Error()
         }
-        console.log(`Sending mail...`)
-        console.log(`${req.header('host')}${admin.link}`)
+        resetPassword(admin.email, `${process.env.ADMIN_HOST}${admin.link}`)
         return res.status(200).send({message: "You will shortly receive an email !"})
     }catch(e){
         console.log(e)

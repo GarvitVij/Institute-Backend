@@ -140,7 +140,7 @@ studentSchema.statics.recoverPassword = async (rollNumber) => {
         token = encrypt(token)
         student.resetPasswordToken = token
         await student.save()
-        return ({link: `/reset-password/${token}`})
+        return ({link: `/reset-password/${token}`, email: student.email})
     }catch(e){
         return ({error: 'cant reset password now, Please try again later'})
     }

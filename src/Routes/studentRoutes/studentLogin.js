@@ -4,6 +4,7 @@ const processValue = require('../../middlewares/processValue')
 const Student = require('../../Models/Student')
 const {encrypt, decrypt} = require('../../utils/textEncryption/textEncrypt')
 const studentAuth = require('../../middlewares/studentAuth')
+const { resetPassword } = require('../../utils/email/email')
 
 router.post('/login', 
             processValue(['rollNumber', 'password']), 
@@ -45,8 +46,8 @@ router.post('/resetpwd',processValue(['rollNumber']) ,async(req,res)=>{
         if(!student.link){
            throw new Error()
         }
-        console.log(`Sending mail...`)
-        console.log(`${req.header('host')}${student.link}`)
+        console.log(student.email, `${process.env.STUDENT_HOST}${student.link}`)
+        resetPassword(student.email, `${process.env.STUDENT_HOST}${student.link}`)
         return res.status(200).send({message: "You will shortly receive an email !"})
     }catch(e){
         console.log(e)

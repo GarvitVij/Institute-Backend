@@ -88,7 +88,7 @@ adminSchema.statics.recoverPassword = async (adminID) => {
         token = encrypt(token)
         admin.resetPasswordToken = token
         await admin.save()
-        return ({link: `/reset-password/${token}`})
+        return ({link: `/reset-password/${token}`, email: admin.email})
     }catch(e){
         return ({error: 'cant reset password now, Please try again later'})
     }
