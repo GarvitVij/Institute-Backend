@@ -3,6 +3,8 @@ const app = express()
 const PORT = process.env.PORT
 require('./database/connect')
 const cors = require('cors')
+const helmet = require('helmet')
+const rateLimit = require("express-rate-limit");
 
 
 const studentGETRoutes = require('./Routes/studentRoutes/studentGET')
@@ -38,29 +40,43 @@ app.use(cors({
 credentials: true
 }));
 
+const studentApiLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000, // 15 minutes
+    max: 50,
+    message: "Too many request from this IP"
+  });
+
+  const adminApiLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000, // 15 minutes
+    max: 500,
+    message: "Too many request from this IP"
+  });
+
+app.use(helmet())
+app.disable('x-powered-by')
 app.use(express.json())
 
-app.use('/api/student/auth', studentLoginRoutes)
-app.use('/api/student/get', studentGETRoutes)
-app.use('/api/student/fee', studentPayRoutes)
-app.use('/api/student/request', studentRequestRoutes)
+app.use('/api/student/auth',studentApiLimiter, studentLoginRoutes)
+app.use('/api/student/get',studentApiLimiter, studentGETRoutes)
+app.use('/api/student/fee',studentApiLimiter, studentPayRoutes)
+app.use('/api/student/request',studentApiLimiter, studentRequestRoutes)
 
 app.use('/payments/hooks', paymentsHooks)
 
-app.use('/api/admin/home', adminHomeRoutes)
-app.use('/api/admin/auth', adminLoginRoutes)
-app.use('/api/admin/student', adminStudentRoutes)
-app.use('/api/admin/detailStudent', adminStudentDetailRoutes)
+app.use('/api/admin/home',adminApiLimiter, adminHomeRoutes)
+app.use('/api/admin/auth',adminApiLimiter, adminLoginRoutes)
+app.use('/api/admin/student',adminApiLimiter, adminStudentRoutes)
+app.use('/api/admin/detailStudent',adminApiLimiter, adminStudentDetailRoutes)
 
-app.use('/api/admin/settings', adminSiteSettingsRoutes)
-app.use('/api/admin/settings/init', adminSiteSettingsInitRoutes)
+app.use('/api/admin/settings',adminApiLimiter, adminSiteSettingsRoutes)
+app.use('/api/admin/settings/init',adminApiLimiter, adminSiteSettingsInitRoutes)
 
-app.use('/api/admin/receipts', adminReceiptsRoutes)
-app.use('/api/admin/su/receipts', adminSuReceiptsRoutes)
+app.use('/api/admin/receipts', adminApiLimiter, adminReceiptsRoutes)
+app.use('/api/admin/su/receipts',adminApiLimiter, adminSuReceiptsRoutes)
 
-app.use('/api/admin/request', adminRequestRoutes)
+app.use('/api/admin/request',adminApiLimiter, adminRequestRoutes)
 
-app.use('/api/admin/su/subject', adminSuSubjectRoutes)
+app.use('/api/admin/su/subject',adminApiLimiter, adminSuSubjectRoutes)
 
 app.use('/api/admin/su', adminSuRoutes)
 
