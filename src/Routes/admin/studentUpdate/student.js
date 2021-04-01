@@ -7,6 +7,8 @@ const multer = require('multer')
 const { convertArrayToCSV } = require('convert-array-to-csv');
 const { encrypt , decrypt } = require('../../../utils/fileEncrypt/fileEncrypt')
 const adminAuth = require('../../../middlewares/adminAuth')
+const logger = require('../../../logger/logger')
+const errorHandler = require('../../../utils/errorHandler/errorHandler')
 
 const gtbpiFileUpload = multer({
     limits: {
@@ -38,30 +40,53 @@ router.post('/', adminAuth ,async (req,res)=>{
             logger(200, req.admin.adminID, ' Add students ', 1)
         }catch(e){
             console.log(e)
-            res.status(400).send({errorMessage: 'Please try again !'})
+            res.status(400).send({errorMessage: 'Please try again !',error: errorHandler(e)})
             logger(400, req.admin.adminID,  ' Add students ', 3)
         }
     })
 })
 
 router.post('/encryptData', processValue(['data']),async(req,res)=> {
+
+    //Making ForEach support Async
+    Array.prototype.asyncForEach = async function forEach(callback, thisArg) {
+        if (typeof callback !== "function") {
+          throw new TypeError(callback + " is not a function");
+        }
+        var array = this;
+        thisArg = thisArg || this;
+        for (var i = 0, l = array.length; i !== l; ++i) {
+          await callback.call(thisArg, array[i], i, array);
+        }
+      };
+
+
+    let valError = 0
     try{
         if(typeof(req.body.data) === "string"){
             req.body.data = JSON.parse(req.body.data)
         }
-        req.body.data.forEach((data,index) => {
+        await req.body.data.asyncForEach(async(data,index) => {
+            if(valError === 1){
+                return false;
+            }
             req.body.data[index].rollNumber  = parseInt(data.rollNumber)
             req.body.data[index].currentSemester = parseInt(data.currentSemester)
             req.body.data[index].isLateralEntry = data.isLateralEntry === "TRUE" ? true : false
             req.body.data[index].phoneNumber = parseInt(data.phoneNumber)
             req.body.data[index].branch = data.branch.charAt(0).toUpperCase() + data.branch.slice(1)
-            Student.validate(data)
+            await Student.validate(data).then().catch(err=>{
+                valError = 1
+                return res.send(errorHandler(err))})
+            return true
         })
-
-        const JSONbuffer = Buffer.from(JSON.stringify(req.body.data))
-        const file = await encrypt(JSONbuffer)
-        res.set('Content-Type', 'application/gtbpi')
-        res.status(200).send(file)
+        
+        if(valError !== 1){
+            const JSONbuffer = Buffer.from(JSON.stringify(req.body.data))
+            const file = await encrypt(JSONbuffer)
+            res.set('Content-Type', 'application/gtbpi')
+            res.status(200).send(file)
+        }        
     }catch(e){
         console.log(e)
         res.status(400).send({errorMessage: 'something went wrong, please try again !'})

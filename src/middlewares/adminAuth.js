@@ -4,8 +4,8 @@ const Admin = require('../Models/Admin')
 
 const adminAuth = async (req,res,next) => {
     try{
-        // const token = req.header('Authorization').replace('Bearer ', '')
-        const token = req.headers.cookie.replace("token=", "").replace("%3A", ":") || '' 
+        const token = req.header('Authorization').replace('Bearer ', '')
+        // const token = req.headers.cookie.replace("token=", "").replace("%3A", ":") || '' 
         if(!token){
             return res.status(401).send({errorMessage: 'Please Authenticate'})
         }
