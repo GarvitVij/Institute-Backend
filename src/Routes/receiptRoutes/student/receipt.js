@@ -175,8 +175,9 @@ router.post('/validate', studentAuth,processValue(['success', 'error', 'order_id
 router.post('/generate', studentAuth, processValue(['receiptID']), async(req,res)=>{
     try{
         const receipt = await Receipt.find({receiptID: req.body.receiptID})
-        ejs.renderFile(path.join(__dirname, './views/', "report-template.ejs"),{}, (err, data) => {
+        ejs.renderFile(path.join(__dirname, './views/', "report-template.ejs"),{receiptId: receipt.receiptID, rollNumber : receipt.rollNumber, imageOne: process.env.WELCOME_IMAGE_1}, (err, data) => {
             if (err) {
+                console.log(err)
                   res.status(400).send({errorMessage: 'Cant generate PDF now !'});
             } else {
                 let options = {

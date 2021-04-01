@@ -46,7 +46,6 @@ router.post('/resetpwd',processValue(['rollNumber']) ,async(req,res)=>{
         if(!student.link){
            throw new Error()
         }
-        console.log(student.email, `${process.env.STUDENT_HOST}${student.link}`)
         resetPassword(student.email, `${process.env.STUDENT_HOST}${student.link}`)
         return res.status(200).send({message: "You will shortly receive an email !"})
     }catch(e){
