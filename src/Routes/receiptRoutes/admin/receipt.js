@@ -3,8 +3,10 @@ const adminAuth = require('../../../middlewares/adminAuth')
 const processValue = require('../../../middlewares/processValue')
 const router = new express.Router()
 const Receipt = require('../../../Models/Payment')
+const paramsToBody = require('../../../utils/paramsToBody/paramsToBody')
+const moment = require('moment')
 
-router.get('/validate', adminAuth, processValue(['semester', 'rollNumber', 'receiptNumber' ]), async(req,res)=>{
+router.get('/validate', adminAuth, paramsToBody(['semester', 'rollNumber', 'receiptNumber' ]), async(req,res)=>{
     try{
         const receipt = await Receipt.findOne({semester: req.body.semester, rollNumber: req.body.rollNumber, receiptID: req.body.receiptNumber, isSuccess: true})
         if(!receipt){
@@ -14,7 +16,7 @@ router.get('/validate', adminAuth, processValue(['semester', 'rollNumber', 'rece
             return res.status(406).send({errorMessage: 'Payment doesnt seems legit, contact admin !'})
         }
         if(receipt.isValid === true){
-            return res.status(406).send({message: 'Receipt is already validated'})
+            return res.status(406).send({errorMessage: 'Receipt is already validated'})
         }
         res.status(200).send({amount: receipt.amount, notes: receipt.notes, orderID: receipt.orderID, razorpayPaymentID:receipt.razorpayPaymentID  })
     }catch(e){
@@ -36,11 +38,11 @@ router.post('/validate', adminAuth, processValue(['orderID', 'paymentID']), asyn
         }
         if(receipt.isValid === true){
             logger(406, req.admin.adminID,  ' Validate receipt ', 3)
-            return res.status(200).send({success: 'Receipt is already validated'})
+            return res.status(406).send({errorMessage: 'Receipt is already validated'})
         }
         receipt.isValid = true
-        const savedReceipt = await receipt.save()
-        res.status(200).send({savedReceipt})
+        await receipt.save()
+        res.status(200).send({saved: true})
         logger(200, req.admin.adminID, ' Validate receipt ', 1)
     }catch(e){
         console.log(e)
@@ -49,14 +51,16 @@ router.post('/validate', adminAuth, processValue(['orderID', 'paymentID']), asyn
     }
 })
 
-router.get('/', adminAuth, processValue(['paged', 'filters']) , async(req,res)=>{
+router.get('/', adminAuth, paramsToBody(['paged', 'filters']) , async(req,res)=>{
     try{
+        req.body.paged = JSON.parse(req.body.paged)
         if(!req.body.paged){
             req.body.paged = {}
             req.body.paged.start = 0
-            req.body.paged.end = 500
+            req.body.paged.end = 100
         }
-        const receipts = await Receipt.find({...req.body.filters} ).skip(req.body.paged.start).limit(req.body.paged.end)
+        let receipts = await Receipt.find({...req.body.filters, isPartialSuccess: true} ).skip(req.body.paged.start).limit(req.body.paged.end).select(['rollNumber','semester', 'receiptID', 'notes', 'amount'])
+        receipts = receipts.map(receipt => receipt.toObject())
         res.status(200).send({receipts})
     }catch(e){
         console.log(e)
