@@ -5,7 +5,11 @@ const Student = require('../Models/Student')
 const studentAuth = async (req,res,next) => {
     try{
         // const token = req.header('Authorization').replace('Bearer ', '')
-        const token = req.headers.cookie.replace("token=", "").replace("%3A", ":") || '' 
+        let reqCookie = "" 
+        req.headers.cookie.split(";").map(cookie => { 
+            cookie = cookie.trim()
+            if(cookie.substring(0,6) === "token="){ reqCookie = cookie}})
+        const token = reqCookie.replace("token=", "").replace("%3A", ":") || '' 
         if(!token){
             return res.status(401).send({errorMessage: 'Please Authenticate'})
         }

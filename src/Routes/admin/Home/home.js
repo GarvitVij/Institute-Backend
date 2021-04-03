@@ -6,7 +6,7 @@ const Setting = require('../../../Models/Settings')
 const Receipt = require('../../../Models/Payment')
 const moment = require('moment')
 
-router.get('/',async(req,res)=>{
+router.get('/',adminAuth, async(req,res)=>{
     try{
         const odd = [1,3,5,7,9]
         const even = [2,4,6,8,10]
@@ -21,7 +21,7 @@ router.get('/',async(req,res)=>{
         const loggedIn = await Receipt.countDocuments({rollNumber: {$in: notPaid}})
         const chartOneTotal = paid + notPaid.length
         const notLoggedIn = chartOneTotal - (loggedIn + paid)
-        const chartOne = {paid: paid, notLoggedIn:notLoggedIn, loggedIn: loggedIn, total: chartOneTotal }
+        const chartOne = [paid, loggedIn, notLoggedIn]
 
         //Chart Two
         let computerRollNumber = await Student.find({currentSemester: {$in: odd}, branch: 'Computer Engineering'}).select(['rollNumber'])
@@ -42,7 +42,7 @@ router.get('/',async(req,res)=>{
         ecePaidAmount = 0
         ecePaid.map(paid => {ecePaidAmount = ecePaidAmount + (paid.amount / 100)})
 
-        const chartTwo = {computerPaidAmount, autoPaidAmount, ecePaidAmount}
+        const chartTwo = [computerPaidAmount, autoPaidAmount, ecePaidAmount]
 
         //Chart Three 
 
@@ -128,7 +128,12 @@ router.get('/',async(req,res)=>{
         EY3 = settings.normalFee * eceStudentYrThree.length
         chartThreeTotal = chartThreeTotal - EY3
          
-        const chartThree = { yearOne: [CY1, AY1, EY1], yearTwo: [CY2,AY2,EY2], yearThree: [CY3,AY3,EY3], back: chartThreeTotal }
+        const chartThree = [
+            {name: "Computer Engineering",data: [CY1,CY2,CY3]},
+            {name: "Automobile engineering",data: [AY1,AY2,AY3]},
+            {name: "Electronics and Communication Engineering",data: [EY1,EY2,EY3]},
+            {name: "Back",data: [0,0,0,chartThreeTotal]},
+        ]
 
         //Data 
 
@@ -153,53 +158,74 @@ router.get('/',async(req,res)=>{
                 eceYrOne, eceYrTwo, eceYrThree}
         }
 
-        const accordionData = {}
+        const accordionData = []
         await data().then((data)=>{
             yearOne ={
-                computerEngineering  : {
-                    total: data.compYrOne,
-                    paid: computerStudentYrOne.length
-                },
-                autoMobileEngineering : {
-                    total : data.autoYrOne,
-                    paid: autoStudentYrOne.length
-                },
-                eceEngineering : {
-                    total: data.eceYrOne,
-                    paid: eceStudentYrOne.length
-                } 
+                year: "Year 1",
+                batch: `${moment().year()} - ${moment().year()+1}`,
+                branches: [
+                    {
+                        branch:  "Computer Engineering",
+                        total: data.compYrOne,
+                        paid: computerStudentYrOne.length
+                    },
+                    {
+                        branch:  "Automobile Engineering",
+                        total : data.autoYrOne,
+                        paid: autoStudentYrOne.length
+                    },
+                    {
+                        branch:  "Electronics and Communication Engineering",
+                        total: data.eceYrOne,
+                        paid: eceStudentYrOne.length
+                    }   
+                ]
             },
             yearTwo ={
-                computerEngineering  : {
-                    total: data.compYrTwo,
-                    paid: computerStudentYrTwo.length
-                },
-                autoMobileEngineering : {
-                    total : data.autoYrTwo,
-                    paid: autoStudentYrTwo.length
-                },
-                eceEngineering : {
-                    total: data.eceYrTwo,
-                    paid: eceStudentYrTwo.length
-                } 
+                year: "Year 2",
+                batch: `${moment().year() - 1} - ${moment().year()}`,
+                branches: [
+                    {
+                        branch:  "Computer Engineering",
+                        total: data.compYrTwo,
+                        paid: computerStudentYrTwo.length
+                    },
+                    {
+                        branch:  "Automobile Engineering",
+                        total : data.autoYrTwo,
+                        paid: autoStudentYrTwo.length
+                    },
+                    {
+                        branch:  "Electronics and Communication Engineering",
+                        total: data.eceYrTwo,
+                        paid: eceStudentYrTwo.length
+                    } 
+                ]    
             },
             yearThree ={
-                computerEngineering  : {
-                    total: data.compYrThree,
-                    paid: computerStudentYrThree.length
-                },
-                autoMobileEngineering : {
-                    total : data.autoYrThree,
-                    paid: autoStudentYrThree.length
-                },
-                eceEngineering : {
-                    total: data.eceYrThree,
-                    paid: eceStudentYrThree.length
-                } 
+                year: "Year 3",
+                batch: `${moment().year() - 2} - ${moment().year() -1}`,
+                branches: [
+                    {
+                        branch:  "Computer Engineering",
+                        total: data.compYrThree,
+                        paid: computerStudentYrThree.length
+                    },
+                    {
+                        branch:  "Automobile Engineering",
+                        total : data.autoYrThree,
+                        paid: autoStudentYrThree.length
+                    },
+                    {
+                        branch:  "Electronics and Communication Engineering",
+                        total: data.eceYrThree,
+                        paid: eceStudentYrThree.length
+                    } 
+                ]  
             }
-            accordionData.yearOne = yearOne
-            accordionData.yearTwo = yearTwo
-            accordionData.yearThree = yearThree
+            accordionData.push(yearOne)
+            accordionData.push(yearTwo)
+            accordionData.push(yearThree)
         })
 
         //Notices - already from notices

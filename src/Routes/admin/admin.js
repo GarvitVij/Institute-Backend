@@ -19,7 +19,6 @@ router.post('/login', processValue(['ID', 'password']),async(req,res)=>{
         })
         res.status(200).send({isSuccess: true})
     }catch(e){
-        console.log(e)
         res.status(401).send({errorMessage: 'Incorrect Credentials'})
     }
 })
