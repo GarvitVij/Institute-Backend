@@ -23,7 +23,7 @@ const gtbpiFileUpload = multer({
 })
 const gtbpiFile = gtbpiFileUpload.single('data')
 
-router.post('/', adminAuth ,async (req,res)=>{
+router.post('/' ,async (req,res)=>{
     gtbpiFile(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
             logger(406, req.admin.adminID,  ' Add students ', 3)
