@@ -41,6 +41,21 @@ const updateReceiptSchema = new mongoose.Schema({
     }
 }, {timestamps: true})
 
+
+
+updateReceiptSchema.methods.toJSON = function () {
+    const update = this
+    const updateObj = update.toObject()
+    
+    delete updateObj.isValid
+    delete updateObj.__v
+    delete updateObj.createdAt
+    delete updateObj.updatedAt
+
+    return updateObj
+}
+
+
 const updateReceipt = mongoose.model('Update', updateReceiptSchema)
 
 module.exports = updateReceipt

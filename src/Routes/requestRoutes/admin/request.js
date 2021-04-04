@@ -4,15 +4,23 @@ const Request = require('../../../Models/Update')
 const processValue = require('../../../middlewares/processValue')
 const Receipt = require('../../../Models/Payment')
 const adminAuth = require('../../../middlewares/adminAuth')
+const paramsToBody = require('../../../utils/paramsToBody/paramsToBody')
+const logger = require('../../../logger/logger')
 
-router.get('/', adminAuth, processValue(['paged', 'filters']) , async(req,res)=>{
+router.get('/', adminAuth, paramsToBody(['filters']) , async(req,res)=>{
     try{
         if(!req.body.paged){
             req.body.paged = {}
             req.body.paged.start = 0
             req.body.paged.end = 500
         }
-        const request = await Request.find({...req.body.filters} ).skip(req.body.paged.start).limit(req.body.paged.end)
+        if(req.body.filters){
+            req.body.filters = JSON.parse(req.body.filters)
+            if(req.body.filters.rollNumber === 0) delete req.body.filters.rollNumber
+            if(req.body.filters.branch === '') delete req.body.filters.branch
+            if(req.body.filters.semester === 0) delete req.body.filters.semester
+        }
+        const request = await Request.find({...req.body.filters,isValid: false} ).sort({created_at: -1}).skip(req.body.paged.start).limit(req.body.paged.end)
 
         res.status(200).send({request})
     }catch(e){
@@ -64,3 +72,4 @@ router.patch('/', adminAuth, processValue(['id', 'success']), async(req,res)=>{
 })
 
 module.exports = router
+
