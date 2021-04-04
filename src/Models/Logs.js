@@ -27,6 +27,16 @@ const logSchema = new mongoose.Schema({
     }
 }, {timestamps: true})
 
+logSchema.methods.toJSON = function () {
+    const logs = this
+    const logsObject = logs.toObject()
+    
+    delete logsObject.__v
+    delete logsObject.updatedAt
+
+    return logsObject
+}
+
 
 const Logs = mongoose.model('Logs', logSchema)
 

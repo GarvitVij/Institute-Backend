@@ -3,12 +3,14 @@ const router = new express.Router()
 const SiteSettings = require('../../../Models/Settings')
 const processValue = require('../../../middlewares/processValue')
 const adminAuth = require('../../../middlewares/adminAuth')
+const moment = require('moment')
+const logger = require('../../../logger/logger')
 
 router.get('/',adminAuth, async(req,res)=>{
     try{
         const data = await SiteSettings.findOne()
         if(!data){throw new Error()}
-        res.status(200).send({data})
+        res.status(200).send(data)
     }catch(e){
         console.log(e)
         res.status(400).send({errorMessage: 'cant fetch data, try again !'})
@@ -38,7 +40,7 @@ router.patch('/notices',adminAuth, processValue(['notices']), async (req,res)=>{
         })   
         settings.notices = notices
         const savedNotices = await SiteSettings.findOneAndUpdate({notices: notices})
-        res.status(200).send({savedNotices})
+        res.status(200).send({success: true})
         logger(200, req.admin.adminID, ' Update notices ', 1)
     }catch(e){
         console.log(e)
@@ -52,6 +54,8 @@ router.patch('/fee',
             processValue(['normalFee', 'backExamFee','maxPerSemesterFee','minLateFeeDate','maxLateFeeDate','minLateFee', 'maxLateFee' ]), 
             async(req,res)=>{
                 try{
+                    req.body.maxLateFeeDate = moment(req.body.maxLateFeeDate)
+                    req.body.minLateFeeDate = moment(req.body.minLateFeeDate)
                     const settings = await SiteSettings.findOne()
                     if(!settings){
                         logger(406, req.admin.adminID,  ' Update fee ', 3)
@@ -62,7 +66,7 @@ router.patch('/fee',
                         settings[value] = Number(req.body[value]) 
                     });
                     const savedSetting = await settings.save()
-                    res.status(200).send({savedSetting})
+                    res.status(200).send({success: true})
                     logger(200, req.admin.adminID, ' Update fee ', 1)
                 }catch(e){
                     console.log(e)

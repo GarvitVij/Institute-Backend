@@ -45,22 +45,12 @@ const settingSchema =  new mongoose.Schema({
         required: true,
         default: Date.now() + 86400000,
         size: 20000,
-        validate(value){
-            if(Date.now() > value){
-                throw new Error('Last Date to submit cant be in past')
-            }
-        }
     },
     maxLateFeeDate: {
         type:Date,
         required: true,
         default: Date.now() + (86400000*2),
         size: 20000,
-        validate(value){
-            if(Date.now() > value){
-                throw new Error('Last Date to submit cant be in past')
-            }
-        }
     },
     minLateFee: {
         type:Number,
@@ -77,6 +67,18 @@ const settingSchema =  new mongoose.Schema({
         size: 20000
     }
 },{timestamps: true})
+
+
+settingSchema.methods.toJSON = function () {
+    const settings = this
+    const settingsObj = settings.toObject()
+    
+    delete settingsObj._id
+    delete settingsObj.createdAt
+    delete settingsObj.updatedAt
+
+    return settingsObj
+}
 
 const Setting = mongoose.model('Setting', settingSchema)
 

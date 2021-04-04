@@ -24,6 +24,7 @@ const paymentsHooks = require('./Routes/receiptRoutes/Hooks/hooks')
 const adminSuRoutes = require('./Routes/suAdminRoutes/suAdmin')
 const adminLoginRoutes = require('./Routes/admin/admin')
 const adminHomeRoutes = require('./Routes/admin/Home/home')
+const adminLoggerRoutes = require('./logger/getLogger')
 
 var allowedOrigins = ['http://localhost:3000',
                       'http://yourapp.com'];
@@ -77,8 +78,10 @@ app.use('/api/admin/su/receipts', adminSuReceiptsRoutes)
 app.use('/api/admin/request', adminRequestRoutes)
 
 app.use('/api/admin/su/subject', adminSuSubjectRoutes)
+app.use('/api/admin/logs', adminLoggerRoutes)
 
 app.use('/api/admin/su', adminSuRoutes)
+
 
 
 

@@ -157,7 +157,7 @@ router.patch('/incSem', adminAuth, async(req,res)=>{
         logger(200, req.admin.adminID, ' Increment semester ', 1)
     }catch(e){
         console.log(e)
-        return res.status(400).send({errorMessage: 'Something went wrong'})
+        res.status(400).send({errorMessage: 'Something went wrong'})
         logger(400, req.admin.adminID,  ' Increment semester ', 3)
     }
 })
