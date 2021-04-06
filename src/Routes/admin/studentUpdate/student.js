@@ -4,7 +4,7 @@ const Student = require('../../../Models/Student')
 const Request = require('../../../Models/Update')
 const processValue = require('../../../middlewares/processValue')
 const multer = require('multer')
-const { convertArrayToCSV } = require('convert-array-to-csv');
+const paramsToBody= require('../../../utils/paramsToBody/paramsToBody')
 const { encrypt , decrypt } = require('../../../utils/fileEncrypt/fileEncrypt')
 const adminAuth = require('../../../middlewares/adminAuth')
 const logger = require('../../../logger/logger')
@@ -23,7 +23,7 @@ const gtbpiFileUpload = multer({
 })
 const gtbpiFile = gtbpiFileUpload.single('data')
 
-router.post('/' ,async (req,res)=>{
+router.post('/' ,adminAuth, async (req,res)=>{
     gtbpiFile(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
             logger(406, req.admin.adminID,  ' Add students ', 3)
@@ -36,10 +36,9 @@ router.post('/' ,async (req,res)=>{
             data = await decrypt(req.file.buffer)
             req.data = JSON.parse(data.toString())
             const saved = await Student.insertMany(req.data)
-            res.status(200).send({saved})
+            res.status(200).send({success: true})
             logger(200, req.admin.adminID, ' Add students ', 1)
         }catch(e){
-            console.log(e)
             res.status(400).send({errorMessage: 'Please try again !',error: errorHandler(e)})
             logger(400, req.admin.adminID,  ' Add students ', 3)
         }
@@ -101,7 +100,6 @@ router.patch('/resetPwdStudent', adminAuth, processValue(['rollNumber']), async(
             return res.status(406).send({errorMessage: 'something went wrong'})
         }
         student.password = `${student.name.substring(0,4)}${student.rollNumber.substring(6,10)}`
-        console.log(student.password)
         student = await student.save()
         if(!student){
             logger(406, req.admin.adminID,  ' Reset student password ', 3)
@@ -124,8 +122,8 @@ router.delete('/batch', adminAuth, processValue(['batch']), async(req,res)=>{
         const timing = req.body.batch[1]
         const batch = req.body.batch[2]
         const currentSemester = req.body.batch[3]
-        const removed = await Student.deleteMany({branch: branch.trim(), timing: timing.trim(), batch: batch.trim(), currentSemester: currentSemester})
-        res.status(204).send({message: 'Deleted successfully!'})
+        await Student.deleteMany({branch: branch.trim(), timing: timing.trim(), batch: batch.trim(), currentSemester: currentSemester})
+        res.status(200).send({success: true, batch: req.body.batch.join( "|")})
         logger(204, req.admin.adminID,  ' Deleted students [ Batch ] ', 2)
     }catch(e){
         console.log(e)
@@ -140,7 +138,7 @@ router.delete('/', adminAuth, processValue(['students']), async(req,res)=>{
         const isTrue = req.body.students.every(student => typeof(student) === "number")
         if(!isTrue) throw new Error()
         const removed = await Student.deleteMany({rollNumber: {$in: req.body.students}})
-        res.status(200).send(removed) 
+        res.status(200).send({success: true}) 
         logger(200, req.admin.adminID, ' Delete students [ Individually ] ', 1)
     }catch(e){
         console.log(e)
@@ -171,15 +169,14 @@ router.patch('/passHold', adminAuth, processValue(['students', 'type']) ,async(r
 
         if(req.body.type === "pass"){
             const removed = await Student.deleteMany({rollNumber: {$in: req.body.students}, currentSemester:{$gt: 5}})
-            res.status(200).send(removed) 
+            res.status(200).send({success: true, type:"pass"}) 
             logger(200, req.admin.adminID, ' Pass/Hold students ', 1)
         }
         if(req.body.type === "hold"){
             const updated = await Student.updateMany({rollNumber: {$in: req.body.students}, currentSemester:{$gt: 5}}, {$inc: {'currentSemester': 1}, hasPaid: false })
-            res.status(204).send(updated) 
+            res.status(200).send({success: true, type: "hold"}) 
             logger(204, req.admin.adminID, ' Pass/Hold students ', 2)
         }
-
     }catch(e){
         console.log(e)
         res.status(400).send({errorMessage: 'Something went wrong'})
@@ -187,33 +184,34 @@ router.patch('/passHold', adminAuth, processValue(['students', 'type']) ,async(r
     }
 })
 
-router.get('/batch', adminAuth, processValue(['batch']), async(req,res)=>{
+
+router.get('/students',adminAuth, paramsToBody(['branch']), async(req,res)=>{
     try{
-        if(typeof(req.body.batch) !== "string" || req.body.batch.split("|").length !== 4) throw new Error()
-        req.body.batch = req.body.batch.split("|")
-        const branch = req.body.batch[0]
-        const timing = req.body.batch[1]
-        const batch = req.body.batch[2]
-        const currentSemester = req.body.batch[3]
-        const data = await Student.find({branch: branch.trim(), timing: timing.trim(), batch: batch.trim(), currentSemester: currentSemester})
-        data.forEach((data,index)=>{
+        if(!req.body.branch){
+            return res.status(406).send({errorMessage: 'Invalid branch'})
+        }
+        const filters = req.body.branch.split(' | ')
+        const studentData = await Student.find({branch: filters[0], timing: filters[1], batch: filters[2], currentSemester: filters[3] })
+        if(studentData.length === 0){
+            return res.status(406).send({errorMessage: 'No student found'})
+        }
+        studentData.map((student,index) => {
+            let data = {...student._doc}
+            
             delete data._id
             delete data.password
             delete data.tokens
             delete data.__v
             delete data.createdAt
             delete data.updatedAt
+            delete data.resetPasswordToken
         })
-        const csvFromArrayOfObjects = convertArrayToCSV(data);
-        const dataBuffer = Buffer.from(csvFromArrayOfObjects);
-        res.set('Content-Type', 'application/csv')
-        res.status(200).send(dataBuffer)
+        res.status(200).send({students: studentData})
     }catch(e){
         console.log(e)
-        res.status(400).send({errorMessage: "Something went wrong"})
+        res.status(400).send({errorMessage: 'Cant get data now, please try again later !'})
     }
 })
-
 
 
 module.exports = router

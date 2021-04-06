@@ -30,7 +30,7 @@ router.get('/', adminAuth, paramsToBody(['filters']), async(req,res)=>{
         delete req.body.filters.from
         delete req.body.filters.to
 
-        console.log(req.body)
+ 
         const logs = await Logs.find({...req.body.filters, createdAt:{
             $gte: req.body.timestamp.from, 
             $lt: req.body.timestamp.to
