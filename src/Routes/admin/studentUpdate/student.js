@@ -92,20 +92,20 @@ router.post('/encryptData', processValue(['data']),async(req,res)=> {
     }
 })
 
-router.patch('/resetPwdStudent', adminAuth, processValue(['rollNumber']), async(req,res)=>{
+router.patch('/resetPwdStudent',adminAuth, processValue(['rollNumber']), async(req,res)=>{
     try{
         let student = await Student.findOne({rollNumber: req.body.rollNumber})
         if(!student){
             logger(406, req.admin.adminID,  ' Reset student password ', 3)
             return res.status(406).send({errorMessage: 'something went wrong'})
         }
-        student.password = `${student.name.substring(0,4)}${student.rollNumber.substring(6,10)}`
+        student.password = `${student.name.substring(0,4)}${student.rollNumber.toString().substring(6,10)}`
         student = await student.save()
         if(!student){
             logger(406, req.admin.adminID,  ' Reset student password ', 3)
             return res.status(406).send({errorMessage: 'something went wrong'})
         }
-        res.status(200).send({message: 'Password changed succesfully'})
+        res.status(200).send({success: true})
         logger(200, req.admin.adminID, '  Reset student password ', 1)
     }catch(e){
         console.log(e)
@@ -151,10 +151,13 @@ router.patch('/incSem', adminAuth, async(req,res)=>{
     try{
         const updated = await Student.updateMany({currentSemester: {$lt: 6}}, { $inc: {'currentSemester': 1}, hasPaid: false })
         await Request.collection.drop()
-        res.status(200).send(updated)
+        res.status(200).send({success: true})
         logger(200, req.admin.adminID, ' Increment semester ', 1)
     }catch(e){
         console.log(e)
+        if(e.code === 26){
+            return res.status(400).send({errorMessage: 'Looks like semester was already increased'})
+        }
         res.status(400).send({errorMessage: 'Something went wrong'})
         logger(400, req.admin.adminID,  ' Increment semester ', 3)
     }

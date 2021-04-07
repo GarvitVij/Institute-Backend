@@ -12,11 +12,9 @@ router.get('/',adminAuth, async(req,res)=>{
         const even = [2,4,6,8,10]
         isSem =  moment().month() + 1 < 7 ? even : odd  
 
-        isSem = odd
-
         //Chart One
-        const paid = await Student.find({ currentSemester: { $in: odd }}).countDocuments({hasPaid: true})
-        let notPaid = await Student.find({hasPaid: false, currentSemester: { $in: odd }}).select(['rollNumber'])
+        const paid = await Student.find({ currentSemester: { $in: isSem }}).countDocuments({hasPaid: true})
+        let notPaid = await Student.find({hasPaid: false, currentSemester: { $in: isSem }}).select(['rollNumber'])
         notPaid = notPaid.map(notPaidRollNumber => { return notPaidRollNumber['rollNumber']})
         const loggedIn = await Receipt.countDocuments({rollNumber: {$in: notPaid}})
         const chartOneTotal = paid + notPaid.length
@@ -24,19 +22,19 @@ router.get('/',adminAuth, async(req,res)=>{
         const chartOne = [paid, loggedIn, notLoggedIn]
 
         //Chart Two
-        let computerRollNumber = await Student.find({currentSemester: {$in: odd}, branch: 'Computer Engineering'}).select(['rollNumber'])
+        let computerRollNumber = await Student.find({currentSemester: {$in: isSem}, branch: 'Computer Engineering'}).select(['rollNumber'])
         computerRollNumber = computerRollNumber.map(obj => obj['rollNumber'])
         let computerPaid = await Receipt.find({rollNumber: {$in: computerRollNumber}, isSuccess: true}).select(['amount'])
         computerPaidAmount = 0
         computerPaid.map(paid => {computerPaidAmount = computerPaidAmount + (paid.amount / 100)})
 
-        let autoRollNumber = await Student.find({currentSemester: {$in: odd}, branch: 'Automobile Engineering'}).select(['rollNumber'])
+        let autoRollNumber = await Student.find({currentSemester: {$in: isSem}, branch: 'Automobile Engineering'}).select(['rollNumber'])
         autoRollNumber = autoRollNumber.map(obj => obj['rollNumber'])
         let autoPaid = await Receipt.find({rollNumber: {$in: autoRollNumber}, isSuccess: true}).select(['amount'])
         autoPaidAmount = 0
         autoPaid.map(paid => {autoPaidAmount = autoPaidAmount + (paid.amount / 100)})
 
-        let eceRollNumber = await Student.find({currentSemester: {$in: odd}, branch: 'Electronics and Communication Engineering'}).select(['rollNumber'])
+        let eceRollNumber = await Student.find({currentSemester: {$in: isSem}, branch: 'Electronics and Communication Engineering'}).select(['rollNumber'])
         eceRollNumber = eceRollNumber.map(obj => obj['rollNumber'])
         let ecePaid = await Receipt.find({rollNumber: {$in: eceRollNumber}, isSuccess: true}).select(['amount'])
         ecePaidAmount = 0
