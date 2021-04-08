@@ -45,7 +45,7 @@ app.use(cors({
 app.disable('x-powered-by')
 app.use(express.json())
 
-
+app.use(cookieParser());
 
 app.use('/api/student/auth', studentLoginRoutes)
 app.use('/api/student/get', studentGETRoutes)
