@@ -14,7 +14,6 @@ router.post('/login', processValue(['ID', 'password']),async(req,res)=>{
         res.cookie('token', token, {
             expires: new Date(Date.now() + 10800000),
             path: "/",
-            SameSite='lax',
             secure: true,
             httpOnly: true
         })
