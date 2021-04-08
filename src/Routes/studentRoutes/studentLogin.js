@@ -17,7 +17,7 @@ router.post('/login',
                         expires: new Date(Date.now() + 10800000),
                         secure: true,
                         path: "/",
-                        httpOnly: false
+                        httpOnly: true
                     })
                     res.status(200).send({isSuccess: true})
                 }catch(e){
