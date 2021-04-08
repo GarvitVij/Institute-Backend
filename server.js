@@ -3,8 +3,8 @@ const app = express()
 const PORT = process.env.PORT
 require('./src/database/connect')
 const cors = require('cors')
-// const helmet = require('helmet')
-// const rateLimit = require("express-rate-limit");
+var cookieParser = require('cookie-parser');
+
 
 
 const studentGETRoutes = require('./src/Routes/studentRoutes/studentGET')
@@ -44,6 +44,7 @@ app.use(cors({
 
 app.disable('x-powered-by')
 app.use(express.json())
+
 
 
 app.use('/api/student/auth', studentLoginRoutes)
