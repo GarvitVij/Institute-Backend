@@ -15,7 +15,8 @@ router.post('/login', processValue(['ID', 'password']),async(req,res)=>{
             expires: new Date(Date.now() + 10800000),
             path: "/",
             secure: true,
-            httpOnly: true
+            httpOnly: true,
+            sameSite: "Lax"
         })
         res.status(200).send({isSuccess: true})
     }catch(e){
