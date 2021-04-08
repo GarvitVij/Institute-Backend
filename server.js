@@ -4,7 +4,7 @@ const PORT = process.env.PORT
 require('./src/database/connect')
 const cors = require('cors')
 var cookieParser = require('cookie-parser');
-
+const path = require('path')
 
 
 const studentGETRoutes = require('./src/Routes/studentRoutes/studentGET')
@@ -26,22 +26,23 @@ const adminLoginRoutes = require('./src/Routes/admin/admin')
 const adminHomeRoutes = require('./src/Routes/admin/Home/home')
 const adminLoggerRoutes = require('./src/logger/getLogger')
 
-var allowedOrigins = ['http://localhost:3000','https://admin-gtbpi.herokuapp.com'];
+
+var allowedOrigins = ['https://gtbpi-exam.herokuapp.com'];
 
 app.use(cors({
-    origin: function(origin, callback){    // allow requests with no origin 
-      // (like mobile apps or curl requests)
-      if(!origin) return callback(null, true);    
-      if(allowedOrigins.indexOf(origin) === -1){
-        var msg = 'The CORS policy for this site does not ' +
-                  'allow access from the specified Origin.';
-        return callback(new Error(msg), false);
-      }    return callback(null, true);
+    origin: function (origin, callback) {    // allow requests with no origin 
+        // (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            var msg = 'The CORS policy for this site does not ' +
+                'allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        } return callback(null, true);
     },
     credentials: true
-  }));
+}));
 
-  var allowCrossDomain = function(req, res, next) {
+var allowCrossDomain = function (req, res, next) {
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -55,6 +56,8 @@ app.disable('x-powered-by')
 app.use(express.json())
 
 app.use(cookieParser());
+
+
 
 app.use('/api/student/auth', studentLoginRoutes)
 app.use('/api/student/get', studentGETRoutes)
@@ -82,6 +85,17 @@ app.use('/api/admin/logs', adminLoggerRoutes)
 app.use('/api/admin/su', adminSuRoutes)
 
 
-app.listen(PORT, ()=>{
+app.use('/admin/', express.static(path.join(__dirname, 'admin')))
+app.get('/admin/*', (req, res) => {
+    res.sendFile(path.join(__dirname, './admin', 'index.html'));
+})
+
+app.use('/', express.static(path.join(__dirname, 'student')))
+app.get('/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'student', 'index.html'));
+})
+
+
+app.listen(PORT, () => {
     console.log('server is listening on port: ', PORT)
 })
