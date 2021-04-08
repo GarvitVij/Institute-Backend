@@ -16,7 +16,7 @@ router.post('/login', processValue(['ID', 'password']),async(req,res)=>{
             path: "/",
             secure: true,
             httpOnly: true,
-            sameSite: "Lax"
+            sameSite: "None"
         })
         res.status(200).send({isSuccess: true})
     }catch(e){
