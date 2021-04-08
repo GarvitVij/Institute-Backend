@@ -15,8 +15,9 @@ router.post('/login', processValue(['ID', 'password']),async(req,res)=>{
             expires: new Date(Date.now() + 10800000),
             path: "/",
             secure: true,
-            httpOnly: false,
-            sameSite: "None"
+            httpOnly: true,
+            sameSite: "None",
+            domain:'.herokuapp.com'
         })
         res.status(200).send({isSuccess: true})
     }catch(e){
