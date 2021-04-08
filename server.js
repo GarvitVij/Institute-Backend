@@ -26,7 +26,7 @@ const adminLoginRoutes = require('./src/Routes/admin/admin')
 const adminHomeRoutes = require('./src/Routes/admin/Home/home')
 const adminLoggerRoutes = require('./src/logger/getLogger')
 
-var allowedOrigins = ['http://localhost:3000','https://admin-gtbpi.herokuapp.com/'];
+var allowedOrigins = ['http://localhost:3000','https://admin-gtbpi.herokuapp.com'];
 
 app.use(cors({
     origin: function(origin, callback){    // allow requests with no origin 
