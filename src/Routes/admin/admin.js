@@ -13,11 +13,9 @@ router.post('/login', processValue(['ID', 'password']),async(req,res)=>{
         token = encrypt(token)
         res.cookie('token', token, {
             expires: new Date(Date.now() + 10800000),
-            path: "/",
-            secure: true,
-            httpOnly: true,
-            sameSite: "None",
-            domain:'.herokuapp.com'
+            secure: false,
+            httpOnly: false,
+            sameSite: "None"
         })
         res.status(200).send({isSuccess: true})
     }catch(e){
