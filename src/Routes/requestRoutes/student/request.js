@@ -28,7 +28,7 @@ router.post('/',
                             isInNotes = noteArray[noteArray.length - 1].trim() === req.body.subjectFrom ? true:false
                         }else{
                             noteArray = noteArray.join().split(',').map(note => note.trim())
-                            isInNotes = noteArray.includes(req.body.subjectFrom)
+                            isInNotes = noteArray.includes(req.body.subjectFrom.trim())
                         }
                     })
                     if(!isInNotes){
@@ -43,10 +43,10 @@ router.post('/',
                     let subOne = false
                     let subTwo = false
                     subjects.forEach(semSubject => {
-                        if(semSubject.subjects.includes(req.body.subjectFrom)){
+                        if(semSubject.subjects.includes(req.body.subjectFrom.trim())){
                             if(!subOne) subOne = true
                         }
-                        if(semSubject.subjects.includes(req.body.subjectTo)){
+                        if(semSubject.subjects.includes(req.body.subjectTo.trim())){
                             if(!subTwo) subTwo = true
                         }
                     })
@@ -61,7 +61,7 @@ router.post('/',
                         from : req.body.subjectFrom,
                         to : req.body.subjectTo,
                     })
-                    let savedRequest = await request.save()
+                    await request.save()
                     return res.status(200).send({isSuccess: true})
                 }catch(e){
                     console.log(e)
