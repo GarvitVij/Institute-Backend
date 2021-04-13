@@ -27,7 +27,7 @@ const adminHomeRoutes = require('./src/Routes/admin/Home/home')
 const adminLoggerRoutes = require('./src/logger/getLogger')
 
 
-var allowedOrigins = ['https://gtbpi-exam.herokuapp.com', 'http://localhost:3001'];
+var allowedOrigins = ['https://gtbpi-exam.herokuapp.com', 'http://localhost:3001','http://localhost:3000'];
 
 app.use(cors({
     origin: function (origin, callback) {    // allow requests with no origin 
