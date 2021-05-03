@@ -27,7 +27,7 @@ const adminHomeRoutes = require('./src/Routes/admin/Home/home')
 const adminLoggerRoutes = require('./src/logger/getLogger')
 
 
-var allowedOrigins = ['https://gtbpi-exam.herokuapp.com', 'http://localhost:3001','http://localhost:3000'];
+var allowedOrigins = ['https://gtbpi-exam.herokuapp.com' ];
 
 app.use(cors({
     origin: function (origin, callback) {    // allow requests with no origin 
@@ -57,6 +57,14 @@ app.use(express.json())
 
 app.use(cookieParser());
 
+
+app.use((req,res,next)=>{
+    if (req.headers['x-forwarded-proto'] !== 'https')
+            // the statement for performing our redirection
+            return res.redirect('https://' + req.headers.host + req.url);
+    else 
+        return next();
+})
 
 
 app.use('/api/student/auth', studentLoginRoutes)
