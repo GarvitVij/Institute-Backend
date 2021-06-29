@@ -20,6 +20,11 @@ const adminAuth = async (req,res,next) => {
         if(!admin){
             throw new Error()
         }
+        if(admin.allowOperations === false){
+            console.log(e)
+            res.clearCookie('name')
+            res.clearCookie('token').status(401).send({ errorMessage: 'Not allowed' })
+        }
         req.token = token
         req.admin = admin
         res.cookie('name', admin.name)
